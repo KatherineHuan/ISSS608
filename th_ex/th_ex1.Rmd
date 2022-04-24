@@ -37,6 +37,7 @@ for (p in packages){
   }
   library(p, character.only = T)
 }
+library(patchwork)
 ```
 
 ## 2.2 Importing the Dataset
@@ -51,6 +52,55 @@ glimpse(participants)
 The table above shows that there are 7 columns 1011 rows in the dataset.
 
 ## 2.3 Explotatry Data Analysis of features
+### 2.3.1 Dstribution of univariable
+Before dig deep into the data, we use gg plot to visualize the distribution of all the columns.
+
+```{r}
+p_householdsize <- ggplot(data = participants,
+       aes(x = householdSize))+
+  geom_bar(color="grey25", 
+           fill="grey90") +
+  ggtitle("Distribution of Household Size")
+
+p_havekids <- ggplot(data=participants, 
+             aes(x = haveKids)) +
+  geom_bar(color="grey25", 
+           fill="grey90") + 
+  ggtitle("Distribution of Have Kids")
+
+p_age <- ggplot(data=participants, 
+             aes(x = age)) +
+  geom_histogram(boundary = 100,
+                 color="grey25", 
+                 fill="grey90") +
+  coord_cartesian(xlim=c(16, 61)) +
+  ggtitle("Distribution of Age")
+
+p_edu <- ggplot(data=participants, 
+             aes(x = educationLevel)) +
+  geom_bar(boundary = 100,
+                 color="grey25", 
+                 fill="grey90") +
+  ggtitle("Distribution of Education Level")
+
+p_interest <- ggplot(data=participants, 
+             aes(x = interestGroup)) +
+  geom_bar(boundary = 100,
+                 color="grey25", 
+                 fill="grey90") +
+  ggtitle("Distribution of Interest Group")
+
+p_joviality<- ggplot(data=participants, 
+             aes(x = joviality)) +
+  geom_density() +
+  ggtitle("Distribution of Joviality")
+
+(p_householdsize/p_havekids/p_interest)|(p_age/p_edu/p_joviality)
+```
+Figure above shows that the data of householdsize, interest group and age are equally distributed. For other virables, we need to explore it further.
+
+### 2.3.2 Linkage between variables
+Let's have a look at the relationship between variables.
 
 ```{r}
 library(patchwork)
@@ -98,7 +148,6 @@ ggplot(data = participants,
   geom_bar()
 ```
 
-
 # 3. Proposed Sketch
 
 # 4. Pareto Chart
@@ -106,7 +155,7 @@ Pareto charts show the ordered frequency counts of data. They show the ordered f
 
 ## 4.1 Data Wrangling
 ### 4.1.1 Data binning on age variable
-The following code shows how to perform data binning on the age variable using the cut() function with specific break marks:
+The following code shows how to perform data binning on the age variable using the *cut()* function with specific break marks:
 
 ```{r}
 part_age<- participants %>%
@@ -194,12 +243,27 @@ devtools::install_github("psyteachr/introdataviz")
 ```
 
 ## 5.2 Creat split violin plots
+
+### 5.2.1 violin plot
 ```{r}
-ggplot(participants, aes(x = interestGroup, y = joviality, fill = educationLevel)) +
+ggplot(part_age, aes(x = ageGroup, y = joviality, fill = haveKids)) +
+  introdataviz::geom_split_violin()
+```
+add boxplot on it
+
+```{r}
+ggplot(part_age, aes(x = ageGroup, y = joviality, fill = haveKids)) +
+  introdataviz::geom_split_violin() +
+  geom_boxplot()
+```
+change the format
+```{r}
+ggplot(part_age, aes(x = ageGroup, y = joviality, fill = haveKids)) +
   introdataviz::geom_split_violin(alpha = .4, trim = FALSE) +
   geom_boxplot(width = .2, alpha = .6, fatten = NULL, show.legend = FALSE) +
   stat_summary(fun.data = "mean_se", geom = "pointrange", show.legend = F, 
                position = position_dodge(.175)) +
   scale_y_continuous(breaks = seq(0, 1, 0.2), 
                      limits = c(0, 1)) +
-  scale_fill_brewer(palette = "Dark2", name = "Have kids")
+  scale_fill_brewer(palette = "Dark2", name = "Have Kids")
+```
