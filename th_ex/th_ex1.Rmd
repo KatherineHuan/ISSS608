@@ -17,11 +17,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # 1. Overview
 
-This take-home exercise aims to sharpen the skill of building data visualization programmatically using ggplot2 by exploring the insights of participants dataset.The data visualisations included in this exercise are:
-  - Create a pareto chart showing showing the distribution of joviality by age.
-  - Create split violin plots showing the demographic structure by households and joviality.
+This take-home exercise aims to sharpen the skill of building data visualization programmatically using ggplot2 by exploring the insights of participants dataset.The data visualizations included in this exercise are:
+  - Create a pareto chart showing the distribution of age group.
+  - Create split violin plots showing the distribution of joviality by educationLevel and haveKids viarables.
 
 # 2. Data Preparation
+
 ## 2.1 Installing and loading the required libraries
 
 The packages required are tidyverse (included relevant packages for data analyses such as [**ggplot2**](https://ggplot2.tidyverse.org/), [**readr**](https://readr.tidyverse.org/index.html) and [**dplyr**](https://dplyr.tidyverse.org/)), [**ggrepel**](https://cran.r-project.org/web/packages/ggrepel/vignettes/ggrepel.html),[**patchwork**](https://patchwork.data-imaginist.com/) and [**knitr**](https://yihui.org/knitr/).
@@ -52,8 +53,10 @@ glimpse(participants)
 The table above shows that there are 7 columns 1011 rows in the dataset.
 
 ## 2.3 Explotatry Data Analysis of features
+
 ### 2.3.1 Dstribution of univariable
-Before dig deep into the data, we use gg plot to visualize the distribution of all the columns.
+
+Before dig deep into the data, we use ggplot to visualize the distribution of all the columns.
 
 ```{r}
 p_householdsize <- ggplot(data = participants,
@@ -97,50 +100,22 @@ p_joviality<- ggplot(data=participants,
 
 (p_householdsize/p_havekids/p_interest)|(p_age/p_edu/p_joviality)
 ```
-Figure above shows that the data of householdsize, interest group and age are equally distributed. For other virables, we need to explore it further.
+Figures above show that the data of householdSize, interestGroup and age are equally distributed. For other viarables, we need to explore it further.
 
 ### 2.3.2 Linkage between variables
+
 Let's have a look at the relationship between variables.
 
-```{r}
-library(patchwork)
-
-pl_hh <- ggplot(data = participants,
-       aes(x = householdSize))+
-  geom_bar()+
-  geom_text(stat="count",
-      aes(label=paste0(..count..,", ",
-      round(..count../sum(..count..)*100,
-        1),"%")),
-      vjust=-1) +
-  xlab("Household Size") +
-  ylab("Count number of each household size") +
-  theme(axis.title.y=element_text(angle = 0))
-
-pl_jo <- ggplot(data=participants, 
-             aes(x = joviality)) +
-  geom_histogram(bins = 10,
-                 color="grey25", 
-                 fill="grey90") + 
-  coord_cartesian(xlim=c(0,1.2)) +
-  ggtitle("Distribution of joviality")
-
-pl_ag <- ggplot(data=participants, 
-             aes(x = age)) +
-  geom_histogram(bins = 10, 
-                 boundary = 100,
-                 color="grey25", 
-                 fill="grey90") +
-  coord_cartesian(xlim=c(16, 70)) +
-  ggtitle("Distribution of Age")
-```
+- Relationship between educationLevel and haveKids.
 
 ```{r}
 ggplot(data = participants,
        aes(x = educationLevel, fill = haveKids))+
   geom_bar()
 ```
+Figure above shows that higher the education leval, lower possibility to have kids.
 
+- Relationship between haveKids and age.
 
 ```{r}
 ggplot(data = participants,
@@ -150,12 +125,18 @@ ggplot(data = participants,
 
 # 3. Proposed Sketch
 
-# 4. Pareto Chart
+We wanted to further explore the distribution of age, education, and Joviality, so we decided to use two more complex charts， that's pareto chart of age group and violin plots of joviality by educationLeval and haveKids.
+
+
+# 4. Pareto Chart of age
+
 Pareto charts show the ordered frequency counts of data. They show the ordered frequency counts of values for the different levels of a categorical or nominal variable. These charts are often used to identify areas to focus on first in process improvement, as supported by the [Pareto Principle (80/20 Rule)](https://en.wikipedia.org/wiki/Pareto_principle).
 
 ## 4.1 Data Wrangling
+
 ### 4.1.1 Data binning on age variable
-The following code shows how to perform data binning on the age variable using the *cut()* function with specific break marks:
+
+The following code shows how to perform data binning on the age variable using the *cut()* and *mutate()* function with specific break marks:
 
 ```{r}
 part_age<- participants %>%
@@ -164,77 +145,101 @@ part_age
 ```
 
 ### 4.1.2 Compute the frequency by age
-To achieve the frequency count of age, *group_by()* of **dplyr** package is used to group the orders by Sub-Category. Then, *summarise()* of dplyr is used to count (i.e. n()) the number of returned orders.
+
+To achieve the frequency count of age, *group_by()* of **dplyr** package is used to group data by age. Then, *summarise()* of dplyr is used to count (i.e. n()) the number of each age group.
 
 ```{r}
 dit_age<- part_age %>%
   group_by(`ageGroup`) %>%
-  summarise('Returns'=n()) %>%
+  summarise('Counts'=n()) %>%
   ungroup()
 dit_age
 ```
 
 ### 4.1.3 Sorting Data
-By default, the values of the tibble data frame is sorted according to the values of the first column.
-We will need to sort the counbt of age field by descending order of values in the age. To accomplish this task, the arrange() of dplyr package is used as shown in the code chunk below.
 
+By default, the values of the tibble data frame is sorted according to the values of the first column.
+We will need to sort the age group by descending order of counts in the age group. To accomplish this task, the *arrange()* of dplyr package is used as shown in the code chunk below.
 
 ```{r}
 freq_sorted <- dit_age %>%
-  arrange(desc(Returns))
+  arrange(desc(Counts))
 head(freq_sorted)
 ```
 
 ### 4.1.4 Compute the Cumulative Frequency
-Lastly, we can compute the cumulative frequency of returns by product sub-category. This task will be performed by using mutate() of dplyr package and cumsum() of Base R.
+
+Lastly, we can compute the cumulative frequency of age group. This task will be performed by using *mutate()* of **dplyr** package and *cumsum()* of Base R.
 
 The newly computed cumulative frequency values will be stored in a new field called cumfreq.
 
 ```{r}
 freq_cum <- freq_sorted %>%
-  mutate(cumfreq = cumsum(Returns)) %>%
-  mutate(cum = cumsum(Returns)/sum(Returns))
+  mutate(cumfreq = cumsum(Counts)) %>%
+  mutate(cum = cumsum(Counts)/sum(Counts))
 head(freq_cum)
 ```
 
 ## 4.2 Plot Pareto Chart
+
 ### 4.2.1 Static Pareto Chart
-A pareto chart was plotted using ggplot2 as follows:
-geom_col() instead of geom_bar() was used to create the bar chart as we do not need to modify the data, and want the height of the bar to represent the actual counts of returns.
-geom_line() and geom_point() was used for the line and scatter plot for the cumulative frequency of return counts. The scatter plot helps reader to identify the corresponding cumulative frequency for each product in a static chart.
-scale_y_continuous() was used to adjust the interval between the grid lines and add a secondary y axes for the cumulative percentage of returns for each product. The secondary y axes is just based on a one-to-one transformation of the primary axes, hence both bar and line charts are still plotted with reference to the primary axes.
-theme() was lastly used to adjust the background color and grid lines of the plot to improve visibility to readers.
+
+A pareto chart was plotted using **ggplot2** as follows:
+*geom_col()* instead of *geom_bar()* was used to create the bar chart as we do not need to modify the data, and want the height of the bar to represent the actual counts of people in each age group.
+*geom_line()* and *geom_point()* was used for the line and scatter plot for the cumulative frequency of return counts. The scatter plot helps reader to identify the corresponding cumulative frequency for people in each age group in a static chart.
+*scale_y_continuous()* was used to adjust the interval between the grid lines and add a secondary y axes for the cumulative percentage of people counts for each age group. The secondary y axes is just based on a one-to-one transformation of the primary axes, hence both bar and line charts are still plotted with reference to the primary axes.
+*theme()* was lastly used to adjust the background color and grid lines of the plot to improve visibility to readers.
 
 ```{r}
 pa <- ggplot(data = freq_cum, 
-       aes(x = reorder(`ageGroup`,-`Returns`))) +
-  geom_col(aes(y=`Returns`), fill = 'lightblue', width= 0.8) +
+       aes(x = reorder(`ageGroup`,-`Counts`))) +
+  geom_col(aes(y=`Counts`), fill = 'lightblue', width= 0.8) +
   geom_point(aes(y=`cumfreq`), color = 'grey20', size = 0.8) +
   geom_line(aes(y =`cumfreq`, group = 1), colour = 'grey20', size = 0.4) +
-  labs(x = "Sub-Category", title = "Pareto Chart of returns by age") +
+  labs(x = "ageGroup", title = "Pareto Chart of Age Group") +
   scale_y_continuous(
-    name = 'Returns (absolute frequency)', breaks = seq(0, 3500, 300), minor_breaks = seq(0, 3500, 100),
-    sec.axis = sec_axis(~.*1/sum(freq_cum$Returns), name = 'Cumulative Frequency', breaks = seq(0, 1, by = 0.1), labels = scales::percent)
-  )
+    name = 'Absolute Frequency', breaks = seq(0, 3500, 300), minor_breaks = seq(0, 3500, 100),
+    sec.axis = sec_axis(~.*1/sum(freq_cum$Counts), name = 'Cumulative Frequency', breaks = seq(0, 1, by = 0.1), labels = scales::percent)
+  )+
+    geom_hline(yintercept=0.8*sum(freq_cum$Counts), linetype="dashed", color = "grey50") +
+  geom_text(aes(3, 0.8*sum(freq_cum$Counts), label = "80.0%", vjust = -0.5), size = 2) +
+  theme(panel.background = element_rect(fill = 'white', colour = 'grey60', size = 0.5, linetype = 'solid'),
+        panel.grid.major = element_line(size = 0.3, linetype = 'solid', colour = 'grey85'),
+        panel.grid.minor = element_line(size = 0.2, linetype = 'solid', colour = 'grey90'),
+        text = element_text(size = 5.5),
+        axis.ticks.x = element_blank()) 
+pa
 pa
 ```
 
-### 4.2.2 Interective Parato Chart
-From the previous chart plotted using ggplot2, the secondary y axes was based on a one-to-one transformation of the primary y axes. The bar and line charts were plotted with reference to the primary y axes, hence the secondary y axes will not be transferred to the interactive chart using ggplotly() of plotly library.
+4.2.2 Interactive Pareto Chart
 
-Therefore, an interactive pareto chart was plotted using plot_ly() from plotly. A scatter plot was not included in this case as one can simply hover across the line to view the corresponding cumulative percentage for each product. Similarly, hovering on the bars will reveal the absolute frequency of returns for each product sub-category.
+From the previous chart plotted using ggplot2, the secondary y axes was based on a one-to-one transformation of the primary y axes. The bar and line charts were plotted with reference to the primary y axes, hence the secondary y axes will not be transferred to the interactive chart using *ggplotly(*) of [**plotly**](https://plotly.com/r/) library.
 
-'''{r}
+Therefore, an interactive pareto chart was plotted using *plot_ly()* from [**plotly**](https://plotly.com/r/). A scatter plot was not included in this case as one can simply hover across the line to view the corresponding cumulative percentage for each age group. Similarly, hovering on the bars will reveal the absolute frequency of people counts for each age group.
 
-'''
+Call the library first:
 
+```{r}
+library(plotly)
+```
 
+```{r}
+plot_ly(freq_cum, x = ~reorder(`ageGroup`,-`Counts`), y = ~`Counts`, type = "bar", name = "Counts") %>%
+  add_trace(x = ~reorder(`ageGroup`,-`Counts`), y = ~`cum`*100,type = "scatter", mode = "lines", yaxis = "y2", name = "Cum. %") %>%
+  plotly::layout(title = "Pareto chart of ageGroup",
+         xaxis = list(title = "ageGroup"),
+         yaxis = list(title = "Counts (Absolute Frequency)", showgrid = F),
+         yaxis2 = list(overlaying = "y", side = "right", title = "Cumulative Percentage (%)", range = list(0, 100)),
+         legend = list(orientation="h", yanchor="bottom",y=0.9,xanchor="top",x=0.2)) 
+```
 
+## 4.3 Insights from Visualization
 
-### 4.2.3 Insights from Visualization
-From the pareto chart, we can tell that 8 sub-categories account for 80% of the returned products. The sub-categories are Binders, Paper, Phones, Furnishings, Accessories, Chairs, Storage, Appliances and Art. As these are about 50% of the product sub-categories, the distribution of returns across can be considered relatively even. The store owners can still use the chart to focus on products with high returns such as Binders and Paper.
+From the pareto chart, we can tell that in the dataset, there are less people for people who are older than 55 years old and younger than 25 years old.The others take up g=for about 80%, which is 
 
 # 5. Split violin plots
+
 #5.1 Package Installation 
 A new package [**introdataviz**] need to be installed to visualize the split violin plots.
 
@@ -245,20 +250,28 @@ devtools::install_github("psyteachr/introdataviz")
 ## 5.2 Creat split violin plots
 
 ### 5.2.1 violin plot
-```{r}
-ggplot(part_age, aes(x = ageGroup, y = joviality, fill = haveKids)) +
-  introdataviz::geom_split_violin()
-```
-add boxplot on it
+
+Code chunk below is used to create the split violin plots.
 
 ```{r}
-ggplot(part_age, aes(x = ageGroup, y = joviality, fill = haveKids)) +
+ggplot(part_age, aes(x = educationLevel, y = joviality, fill = haveKids)) +
+  introdataviz::geom_split_violin()
+```
+
+### 5.2.2 Add boxplot on it
+
+In order to more clearly show the distribution difference of Joviality among people with different education levels and people with or without children, box plot needs to be superimposed on the violin chart.
+
+```{r}
+ggplot(part_age, aes(x = educationLevel, y = joviality, fill = haveKids)) +
   introdataviz::geom_split_violin() +
   geom_boxplot()
 ```
-change the format
+
+### 5.2.3 Change the Format
+
 ```{r}
-ggplot(part_age, aes(x = ageGroup, y = joviality, fill = haveKids)) +
+ggplot(part_age, aes(x = educationLevel, y = joviality, fill = haveKids)) +
   introdataviz::geom_split_violin(alpha = .4, trim = FALSE) +
   geom_boxplot(width = .2, alpha = .6, fatten = NULL, show.legend = FALSE) +
   stat_summary(fun.data = "mean_se", geom = "pointrange", show.legend = F, 
@@ -267,3 +280,9 @@ ggplot(part_age, aes(x = ageGroup, y = joviality, fill = haveKids)) +
                      limits = c(0, 1)) +
   scale_fill_brewer(palette = "Dark2", name = "Have Kids")
 ```
+
+## 5.3 Insights from Visualization
+From the plot, we can tell that:
+- For those who does not have kids, higher the education level, higher the joviality level.But for those who has kids, it's not the case-group from the low education level have a higher joviality level.
+- The joviality differs the most for people from the lowest education group when comes to whether have kids affect the level of happiness.The median of those who comes from low education group and does not have kids is the lowest, the median of those who comes from low education group but  have kids is the hightes.
+- The medians of groups except for low education are in a similar level no matter whether they have kids or not.
