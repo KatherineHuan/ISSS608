@@ -146,7 +146,8 @@ part_age
 
 ### 4.1.2 Compute the frequency by age
 
-To achieve the frequency count of age, *group_by()* of **dplyr** package is used to group data by age. Then, *summarise()* of dplyr is used to count (i.e. n()) the number of each age group.
+To achieve the frequency count of age, *group_by()* of **dplyr** package is used to group data by age. 
+Then, *summarise()* of dplyr is used to count (i.e. n()) the number of each age group.
 
 ```{r}
 dit_age<- part_age %>%
@@ -159,6 +160,7 @@ dit_age
 ### 4.1.3 Sorting Data
 
 By default, the values of the tibble data frame is sorted according to the values of the first column.
+
 We will need to sort the age group by descending order of counts in the age group. To accomplish this task, the *arrange()* of dplyr package is used as shown in the code chunk below.
 
 ```{r}
@@ -185,9 +187,13 @@ head(freq_cum)
 ### 4.2.1 Static Pareto Chart
 
 A pareto chart was plotted using **ggplot2** as follows:
+
 *geom_col()* instead of *geom_bar()* was used to create the bar chart as we do not need to modify the data, and want the height of the bar to represent the actual counts of people in each age group.
+
 *geom_line()* and *geom_point()* was used for the line and scatter plot for the cumulative frequency of return counts. The scatter plot helps reader to identify the corresponding cumulative frequency for people in each age group in a static chart.
+
 *scale_y_continuous()* was used to adjust the interval between the grid lines and add a secondary y axes for the cumulative percentage of people counts for each age group. The secondary y axes is just based on a one-to-one transformation of the primary axes, hence both bar and line charts are still plotted with reference to the primary axes.
+
 *theme()* was lastly used to adjust the background color and grid lines of the plot to improve visibility to readers.
 
 ```{r}
@@ -208,7 +214,6 @@ pa <- ggplot(data = freq_cum,
         panel.grid.minor = element_line(size = 0.2, linetype = 'solid', colour = 'grey90'),
         text = element_text(size = 5.5),
         axis.ticks.x = element_blank()) 
-pa
 pa
 ```
 
@@ -240,7 +245,8 @@ From the pareto chart, we can tell that in the dataset, there are less people fo
 
 # 5. Split violin plots
 
-#5.1 Package Installation 
+## 5.1 Package Installation 
+
 A new package [**introdataviz**] need to be installed to visualize the split violin plots.
 
 ```{r}
@@ -249,7 +255,7 @@ devtools::install_github("psyteachr/introdataviz")
 
 ## 5.2 Creat split violin plots
 
-### 5.2.1 violin plot
+### 5.2.1 Creat violin plot
 
 Code chunk below is used to create the split violin plots.
 
@@ -283,6 +289,9 @@ ggplot(part_age, aes(x = educationLevel, y = joviality, fill = haveKids)) +
 
 ## 5.3 Insights from Visualization
 From the plot, we can tell that:
+
 - For those who does not have kids, higher the education level, higher the joviality level.But for those who has kids, it's not the case-group from the low education level have a higher joviality level.
+
 - The joviality differs the most for people from the lowest education group when comes to whether have kids affect the level of happiness.The median of those who comes from low education group and does not have kids is the lowest, the median of those who comes from low education group but  have kids is the hightes.
+
 - The medians of groups except for low education are in a similar level no matter whether they have kids or not.
