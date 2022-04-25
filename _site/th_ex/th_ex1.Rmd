@@ -18,9 +18,13 @@ knitr::opts_chunk$set(echo = TRUE)
 # 1. Overview
 
 This take-home exercise aims to sharpen the skill of building data visualization programmatically using ggplot2 by exploring the insights of participants dataset.The data visualizations included in this exercise are:
+
   - Doing EDA (Explotary data analysis ) for all features
+  
   - Create a pareto chart showing the distribution of age group.
+  
   - Create split violin plots showing the distribution of joviality by educationLevel and haveKids viarables.
+  
   - Create split violin plots showing the distribution of joviality by ageGroup and haveKids viarables.
 
 # 2. Data Preparation

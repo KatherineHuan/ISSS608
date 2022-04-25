@@ -5,8 +5,11 @@ description: |
 author:
   - name: Huan Li 
     url: https://linkedin.com/in/huan-li-ab7498124/
+    
+AFFILIATION: School of Computing and Information Systems (SMU)
 
 date: "`r Sys.Date()`"
+
 output: distill::distill_article
 ---
 
@@ -17,10 +20,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # 1. Overview
 
-This take-home exercise aims to sharpen the skill of building data visualization programmatically using ggplot2 by exploring the insights of participants dataset.The data visualizations included in this exercise are:
+This take-home exercise aims to sharpen the skill of building data visualization programmatically by exploring the insights of participants dataset from [*VAST Challenge 2022*](https://vast-challenge.github.io/2022/), and processed by RStudio tidyverse family of packages and visualized by ggplot2 and its extensions.The data visualizations included in this exercise are:
+
   - Doing EDA (Explotary data analysis ) for all features
+  
   - Create a pareto chart showing the distribution of age group.
+  
   - Create split violin plots showing the distribution of joviality by educationLevel and haveKids viarables.
+  
   - Create split violin plots showing the distribution of joviality by ageGroup and haveKids viarables.
 
 # 2. Data Preparation
