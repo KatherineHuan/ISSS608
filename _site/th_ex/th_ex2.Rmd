@@ -1,23 +1,305 @@
 ---
-title: "th_ex2"
+title: "Take-home Exercise 2"
 description: |
-  A new article created using the Distill format.
+  Explore different perspectives and approaches to create more truthful and enlightening data visualisation
 author:
   - name: Huan Li 
     url: https://linkedin.com/in/huan-li-ab7498124/
+    affiliation: SMU, SCIS, Master of IT in Business
+    affiliation_url: https://scis.smu.edu.sg/master-it-business/about-mitb-main
 date: "`r Sys.Date()`"
-output: distill::distill_article
+output: 
+  distill::distill_article:
+    toc: true
+    toc_float: true
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set()
 ```
 
-Distill is a publication format for scientific and technical writing, native to the web. 
 
-Learn more about using Distill for R Markdown at <https://rstudio.github.io/distill>.
+# 1. Overview
+
+The main purpose of this assignment is to evaluate the take-home exercise 1 from the perspective of clarity and aesthetics, and to refine the diagram based on the principles we learned in the previous two lessons.
+The dataset of this project is [*VAST Challenge 2022*](https://vast-challenge.github.io/2022/). The operation was carried out on Rstudio and main packages used are tidyverse and ggplot2 extensions.
+
+# 2. Data Preparation
+We will do the data preparation in a similar procedure of the original creation:
+
+*Installing and loading the required libraries*
+
+```{r}
+packages = c('tidyverse', 'knitr', 'ggdist', 'scales', 'grid', 'formattable', 'gridExtra', 'patchwork')
+
+for (p in packages){
+  if(!require(p, character.only = T)){
+    install.package(p)
+  }
+  library(p, character.only = T)
+}
+library(patchwork)
+```
+
+*Importing the dataset*
+
+```{r}
+# read csv file
+participants <- read_csv('data/Participants.csv')
+```
+
+*Data Wrangling*
+
+```{r}
+# rename 'HighSchoolOrCollege'
+participants$educationLevel <- sub('HighSchoolOrCollege', 
+                                    'High School or College',
+                                    participants$educationLevel)
+
+# rename columns
+participants <- participants %>%
+  rename('ParticipantID' = 'participantId', 
+         'HouseholdSize' = 'householdSize', 
+         'HaveKids' = 'haveKids', 
+         'Age' = 'age', 
+         'EducationLevel' = 'educationLevel', 
+         'InterestGroup' = 'interestGroup', 
+         'Joviality' = 'joviality')
+
+# Age variable is binned with the following code chunk:
+brks <- c(17, 20, 25, 30, 35, 40, 45, 50, 55, 60)
+grps <- c('20 & Below', '21-25', '26-30', '31-35', '36-40', '41-45','46-50', '51-55', '56-60')
+participants$AgeGroup <- cut(participants$Age, breaks=brks, labels = grps)
+
+
+```
+
+# 3. Critique and New Design
+
+## 3.1 Distribution of Age
+A histogram is used to reveal the distribution of residents’ age.
+
+```{r echo=FALSE, out.width = '80%'}
+knitr::include_graphics("C:/KatherineHuan/ISSS608/th_ex/data/pic/th2_or1.PNG")
+```
+
+
+## 3.1.1 Critique
+### Clarity
+- In general,this chart gives a rough idea of the age distribution of the participants, but it more information can be extracted, such as the percentage of each age group
+- Annotation of counts of each age group conveys intuitive information for the audience .
+- The superscript of each bar chart is not intuitive and it is better to use percentages.
+- The x-axis title format looks not formal.
+- The meaning of y-axis title is vague, can be improved to be more specific.
+- The position of x-axis tick mark is not easy for reading.
+- Adding more data would be better,such as data sources.
+
+### Aesthetic
+- The color contrast is not beautiful, a lighter color for the background and a brighter color for the bar will be better.
+- The color of the annotation is not harmonious.
+- The title is not in the middle of the figure, affecting the appearance.
+- Intuitive bar chart will be more attractive and informative.
+
+## 3.1.2 New dedign
+
+```{r}
+library(plotly)
+
+# Bar chart plot
+Age <- ggplot(data= participants, 
+       aes(x= AgeGroup)) +
+geom_bar(fill= 'light blue') +
+ylim(0, 150) +
+
+# annotation
+geom_text(stat = 'count',
+          aes(label= paste0(round(stat(count)/sum(stat(count))*100, 
+          1), '%')), vjust= -0.5, size= 2.5) +
+
+labs(y= 'No. of\nResidents', x= 'AgeGroup',
+     title = "Distribution of Residents' Age",
+     subtitle= 'Demographics in Engagement, Ohio',
+     caption = "Source: VAST Challenge 2022") +
+theme(plot.title = element_text(hjust = 0.5),
+      plot.subtitle = element_text(hjust = 0.5),
+      axis.title.y= element_text(hjust = 0.5), 
+      axis.ticks.x= element_blank(),
+      panel.background= element_blank(),
+      panel.grid.major = element_line(size= 0.2, color = "grey"),
+      axis.line= element_line(color= 'grey'),
+      plot.caption = element_text(hjust = 0))
+ggplotly(Age)
+```
+
+*Clarity*
+- The residents' proportion in each age group was shown, which is more intuitive for audience to understand.
+- Data source and explanation of the data are added to provide more information.
+- The Intuitive effect helps audience to explore more detailed information when they are interested.
+- The mark of x-axis and y-axis is easy to understand
+*Aesthetic*
+- The color match is clean and easily readable to the audience.
+- Positions of title, y-axis are improved
+- The plot backgroud is clearer
 
 
 
 
 
+
+## 3.2 Joviality Distribution in Relation to AgeGroup and EducationLevel
+Line chart is used to reveal the distribution of residents’ joviality according to their age and education level.
+
+```{r echo=FALSE, out.width = '70%'}
+knitr::include_graphics("C:/KatherineHuan/ISSS608/th_ex/data/pic/th2_or2.PNG")
+```
+
+
+## 3.2.1 Critique
+*Clarity*
+- There are three variables in this picture, age, education level and Joviality, which is intended to show the joviality of different ages and education levels.With too many factors and no final focus, it is difficult to express the author's meaning clearly.
+- There are too many lines and multiple colors, which make it looks complicated.It is difficult to see the distribution trend of Joviality of different ages on each line.
+- The lines are too thick, and the distribution curves of different education levels cover each other, so it is difficult to see the average level of joviality of different education levels in each age group.
+- The title on the X-axis seems ambiguous and informal.
+- The gray background distracts the focus and makes it look indistinct.
+- Additional information, such as data sources, can be added to make the icon more complete.
+- The font design makes the theme unclear and unfocused.
+
+*Aesthetic*
+- The Y-axis title looks informal; it could be more formal.
+- The title is not centered and can be adjusted to look better.
+- The size of the annotation doesn't look pretty.
+- The overall color scheme lacks design and is not attractive.
+
+## 3.2.2 New dedign
+
+```{r}
+# Plot Joviality in relation to Age
+p1=ggplot(participants,
+       aes(x= AgeGroup, y= Joviality)) +
+
+geom_violin(fill= '#66cdaa',
+            scale = 'count',alpha = .9, trim = FALSE,
+            color= NA) +
+geom_boxplot(width= 0.2,
+             color = '#065535',
+             alpha= 0.8) +
+stat_summary(aes(color= 'Mean'),
+             fun= 'mean',
+             size= 0.05) + 
+geom_hline(aes(yintercept = 0.5),
+           color= 'black',
+           linetype= 'dashed',
+           size= .6) +
+
+# Annotation
+scale_color_manual(name= 'Statistics',
+                   values = (Mean= '#f6546a')) +
+# Add on Education Level Factor
+# facet_grid(~factor(EducationLevel)) +
+labs(title= 'Joviality Distribution in Relation to Age',
+     x= 'Age Group', y= 'Joviality',
+     subtitle= 'Demographics in Engagement, Ohio',
+     caption = "Source: VAST Challenge 2022") +
+theme(panel.background = element_blank(),
+      plot.title = element_text(hjust = 0.5),
+      plot.subtitle = element_text(hjust = 0.5),
+      axis.title.y = element_text(angle=0,vjust = 0.5),
+      axis.ticks.x = element_blank(),
+      axis.line= element_line(color= 'grey'),
+      axis.text.x = element_text(size=8,angle=0),
+      panel.grid.major.y = element_line(color= 'grey', size = 0.1),
+      plot.caption = element_text(hjust=0),
+      legend.key = element_rect(fill= NA))
+p1
+```
+
+```{r}
+
+# Plot Joviality in relation to Age
+p2=ggplot(participants,
+       aes(x= EducationLevel, y= Joviality)) +
+
+geom_violin(fill= '#66cdaa',
+            scale = 'count',alpha = .9, trim = FALSE,
+            color= NA) +
+geom_boxplot(width= 0.2,
+             color = '#065535',
+             alpha= 0.8) +
+stat_summary(aes(color= 'Mean'),
+             fun= 'mean',
+             size= 0.05) + 
+geom_hline(aes(yintercept = 0.5),
+           color= 'black',
+           linetype= 'dashed',
+           size= .6) +
+
+# Annotation
+scale_color_manual(name= 'Statistics',
+                   values = (Mean= '#f6546a')) +
+# Add on Education Level Factor
+#facet_grid(~factor(AgeGroup)) +
+labs(title= 'Joviality Distribution in Relation to Education Level',
+     x= 'Education Level', y= 'Joviality',
+     subtitle= 'Demographics in Engagement, Ohio',
+     caption = "Source: VAST Challenge 2022") +
+theme(panel.background = element_blank(),
+      plot.title = element_text(hjust = 0.5),
+      plot.subtitle = element_text(hjust = 0.5),
+      axis.title.y = element_text(angle=0,vjust = 0.5),
+      axis.ticks.x = element_blank(),
+      axis.line= element_line(color= 'grey'),
+      axis.text.x = element_text(size=8,angle=0),
+      panel.grid.major.y = element_line(color= 'grey', size = 0.1),
+      plot.caption = element_text(hjust=0),
+      legend.key = element_rect(fill= NA))
+p2
+
+```
+
+```{r}
+# Data manipulation
+percent <-
+  participants %>% 
+  group_by(AgeGroup, EducationLevel) %>%
+  summarise(edu_size= n()) %>%
+  mutate(edu_pct= percent(edu_size/sum(edu_size))) 
+
+#Plot
+p3 <- ggplot(data= percent, 
+       aes(x= factor(AgeGroup), 
+           y= edu_pct,
+           group= EducationLevel,
+           color= factor(EducationLevel))) +
+geom_line() +
+scale_color_discrete(name= 'Education Level') +
+scale_y_continuous(labels = percent_format(),
+                   expand = c(0.2, 0.2)) +
+labs(x= 'Age Group',y= 'Propotions',
+     title = "Composition of Residents' Education Level in Age Groups")+
+theme(legend.position = 'top', legend.direction = 'horizontal',
+      axis.title.y= element_text(angle=90), axis.ticks.x= element_blank(),
+      panel.background= element_blank(), axis.line= element_line(color= 'grey'),
+      panel.grid.major = element_line(size= 0.2, color = "grey"),
+      legend.key = element_rect(fill= NA), legend.title = element_text(size = 8.5),
+      plot.title = element_text(hjust=0.5))
+p3
+```
+
+*Clarity*
+- The new graph adopted a combination of violin, boxplot and line chart, instead of line chart to reveal the distribution of joviality for residents, and we use three charts to show the influence of age and education level on Joviality and influence of age on education level respectively, which is easier to detect the trend when considering each aspect.
+- Data source and explanation of the data are added to provide more information.
+- The mark of x-axis and y-axis is easy to understand
+*Aesthetic*
+- The color match is clean and easily readable to the audience.
+- Positions of title, y-axis are improved
+- The plot backgroud is clearer and easier to detect changes.
+- Overall format and design are improved to provide a clean and professional look.
+
+# 4. Conclusions
+
+- There are more than one way to present the data.It's not that the more complex the graph, the better to show the ability to make the graph, we should avoid pack too much information into one graph, but use simple and clear graph to make the audience understand our point of view more easily.
+
+- Derived values reveal more interesting patterns than absolute values.For example, the propotion of each age group
+
+- Pre-attentive processing is important for design of visualizations
