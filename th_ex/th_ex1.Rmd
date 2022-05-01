@@ -217,23 +217,29 @@ A pareto chart was plotted using **ggplot2** as follows:
 *theme()* was lastly used to adjust the background color and grid lines of the plot to improve visibility to readers.
 
 ```{r}
-pa <- ggplot(data = freq_cum, 
-       aes(x = reorder(`ageGroup`,-`Counts`))) +
-  geom_col(aes(y=`Counts`), fill = 'lightblue', width= 0.8) +
-  geom_point(aes(y=`cumfreq`), color = 'grey20', size = 0.8) +
-  geom_line(aes(y =`cumfreq`, group = 1), colour = 'grey20', size = 0.4) +
-  labs(x = "ageGroup", title = "Pareto Chart of Age Group") +
-  scale_y_continuous(
-    name = 'Absolute Frequency', breaks = seq(0, 3500, 300), minor_breaks = seq(0, 3500, 100),
-    sec.axis = sec_axis(~.*1/sum(freq_cum$Counts), name = 'Cumulative Frequency', breaks = seq(0, 1, by = 0.1), labels = scales::percent)
-  )+
-    geom_hline(yintercept=0.8*sum(freq_cum$Counts), linetype="dashed", color = "grey50") +
-  geom_text(aes(3, 0.8*sum(freq_cum$Counts), label = "80.0%", vjust = -0.5), size = 2) +
-  theme(panel.background = element_rect(fill = 'white', colour = 'grey60', size = 0.5, linetype = 'solid'),
-        panel.grid.major = element_line(size = 0.3, linetype = 'solid', colour = 'grey85'),
-        panel.grid.minor = element_line(size = 0.2, linetype = 'solid', colour = 'grey90'),
-        text = element_text(size = 5.5),
-        axis.ticks.x = element_blank()) 
+pa <- ggplot(data = freq_cum,
+             aes(x = reorder(`ageGroup`,-`Counts`))) +
+geom_col(aes(y=`Counts`), fill = 'lightblue', width= 0.8) +
+geom_point(aes(y=`cumfreq`), color = 'grey20', size = 0.8) +
+geom_line(aes(y =`cumfreq`, group = 1), colour = 'grey20', size = 0.4) +
+labs(x = "ageGroup", title = "Pareto Chart of Age Group") +
+scale_y_continuous(name = 'Absolute Frequency', 
+                   breaks = seq(0, 3500, 300), 
+                   minor_breaks = seq(0, 3500, 100),
+                   sec.axis = sec_axis(~.*1/sum(freq_cum$Counts), 
+                   name = 'Cumulative Frequency', 
+                   breaks = seq(0, 1, by = 0.1), 
+                   labels = scales::percent)) +
+geom_hline(yintercept=0.8*sum(freq_cum$Counts), linetype="dashed", color = "grey50") +
+geom_text(aes(3, 0.8*sum(freq_cum$Counts), label = "80.0%", vjust = -0.5), size = 2) +
+theme(panel.background = element_rect(fill = 'white', 
+                                      colour = 'grey60', 
+                                      size = 0.5, 
+                                      linetype = 'solid'),
+      panel.grid.major = element_line(size = 0.3, linetype = 'solid', colour = 'grey85'),
+      panel.grid.minor = element_line(size = 0.2, linetype = 'solid', colour = 'grey90'),
+      text = element_text(size = 5.5),
+      axis.ticks.x = element_blank()) 
 pa
 ```
 
@@ -250,12 +256,20 @@ library(plotly)
 ```
 
 ```{r}
-plot_ly(freq_cum, x = ~reorder(`ageGroup`,-`Counts`), y = ~`Counts`, type = "bar", name = "Counts") %>%
-  add_trace(x = ~reorder(`ageGroup`,-`Counts`), y = ~`cum`*100,type = "scatter", mode = "lines", yaxis = "y2", name = "Cum. %") %>%
-  plotly::layout(title = "Pareto chart of ageGroup",
+plot_ly(freq_cum, x = ~reorder(`ageGroup`,-`Counts`), y = ~`Counts`, type = "bar", name = "Counts")%>%
+add_trace(x = ~reorder(`ageGroup`,-`Counts`), 
+          y = ~`cum`*100,type = "scatter", 
+          mode = "lines", 
+          yaxis = "y2", 
+          name = "Cum. %") %>%
+plotly::layout(title = "Pareto chart of ageGroup",
          xaxis = list(title = "ageGroup"),
-         yaxis = list(title = "Counts (Absolute Frequency)", showgrid = F),
-         yaxis2 = list(overlaying = "y", side = "right", title = "Cumulative Percentage (%)", range = list(0, 100)),
+         yaxis = list(title = "Counts (Absolute Frequency)", 
+                      showgrid = F),
+         yaxis2 = list(overlaying = "y", 
+                       side = "right", 
+                       title = "Cumulative Percentage (%)", 
+                       range = list(0, 100)),
          legend = list(orientation="h", yanchor="bottom",y=0.9,xanchor="top",x=0.2)) 
 ```
 
