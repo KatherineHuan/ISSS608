@@ -42,6 +42,7 @@ exam <- read_csv("data/Exam_data.csv")
 ### ANOVA test
 
 ```{r fig.width=6}
+set.seed(0507)
 ggbetweenstats(
   data = exam,
   x = RACE, 
