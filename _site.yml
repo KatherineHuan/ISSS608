@@ -22,4 +22,12 @@ navbar:
         href: "th_ex/th_ex1.html"
       - text: "Take-home exercise 2"
         href: "th_ex/th_ex2.html"
+      - text: "Take-home exercise 3"
+        href: "th_ex/th_ex3.html"
+    - text: "In-class Exercise"
+      menu:
+      - text: "In-class exercise 1"
+        href: "ic_ex/ic_ex1.html"
+      - text: "In-class exercise 2"
+        href: "ic_ex/ic_ex2.html"
 output: distill::distill_article

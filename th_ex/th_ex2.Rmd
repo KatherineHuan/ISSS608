@@ -347,7 +347,9 @@ p4
 
 **Clarity**
 
-- The new graph adopted a combination of violin, box plot and line chart, instead of single line chart to reveal the distribution of joviality for residents, and we use a combined plot and three individual charts to show the influence of age and education level on Joviality and influence of age on education level respectively, which is easier to detect the trend when considering each aspect.
+- The new graph adopted a combination of violin, box plot and line chart, instead of single line chart to reveal the distribution of joviality for residents.
+- With ordinary density curves, it is difficult to compare more than just a few distributions because the lines visually interfere with each other. With a violin plot, it's easier to compare several distributions since they're placed side by side. So here we used a combined violin plot to have a overall visualization of the relationship of variables.
+- Three individual charts are adopted to show the influence of age and education level on Joviality and influence of age on education level respectively, which is easier to detect the trend when considering each aspect.
 - In the combined chart, the green area of each violin shows the density of joviality based on age group and education level, which intuitively reflect the joviality level. And the facet of education level makes it possible to take the third factor into consideration when explain the relationships to the audience.
 - Data source and explanation of the data are added to provide more information.
 - The ticks mark of x-axis and y-axis are easy to understand.
