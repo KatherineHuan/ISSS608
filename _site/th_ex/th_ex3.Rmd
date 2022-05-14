@@ -19,73 +19,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
-# 1. Overview
-
-Anticipating rapid growth, the city of Engagement, Ohio USA is doing a participatory urban planning exercise to understand the current state of the city and identify opportunities for future growth. About 1000 representative residents in this modest-sized city have agreed to provide data using the city’s urban planning app, which records the places they visit, their spending, and their purchases, among other things. From these volunteers, the city will have data to assist with their major community revitalization efforts, including how to allocate a very large city renewal grant they have recently received.
-
-Economic considers the financial health of the city. How does the financial health of the residents change over the period covered by the dataset? How do wages compare to the overall cost of living in Engagement? Are there groups that appear to exhibit similar patterns? 
-
-In this exercise, we will explore different perspectives and approaches to create more enlightening data visualisation on dataset [*VAST Challenge 2022*](https://vast-challenge.github.io/2022/). The operation was carried out on Rstudio and main packages used are tidyverse and ggplot2 extensions.
-
-# 2. Data Preparation
-
-**Installing and loading the required libraries**
-
-```{r}
-packages = c('tidyverse', 'knitr', 
-             'ggdist', 'scales', 
-             'grid', 'formattable', 
-             'gridExtra', 'patchwork')
-
-for (p in packages){
-  if(!require(p, character.only = T)){
-    install.package(p)
-  }
-  library(p, character.only = T)
-}
-library(patchwork)
-```
-
-**Importing the dataset**
-
-```{r}
-# read csv file
-#financial <- read_csv('data/FinancialJournal.csv')
-participants <- read_csv('data/Participants.csv')
-
-```
-
-**Data Wrangling**
-
-```{r}
-# rename 'HighSchoolOrCollege'
-participants$educationLevel <- sub('HighSchoolOrCollege', 
-                                    'High School or College',
-                                    participants$educationLevel)
-
-# rename columns
-participants <- participants %>%
-  rename('ParticipantID' = 'participantId', 
-         'HouseholdSize' = 'householdSize', 
-         'HaveKids' = 'haveKids', 
-         'Age' = 'age', 
-         'EducationLevel' = 'educationLevel', 
-         'InterestGroup' = 'interestGroup', 
-         'Joviality' = 'joviality')
-
-# Age variable is binned with the following code chunk:
-brks <- c(17, 20, 25, 30, 35, 40, 45, 50, 55, 60)
-grps <- c('20 & Below', '21-25', '26-30', '31-35', '36-40', '41-45','46-50', '51-55', '56-60')
-participants$AgeGroup <- cut(participants$Age, breaks=brks, labels = grps)
-
-
-```
-```{r}
-
-
-```
-
+esquisse::esquisser()
 
 
 
