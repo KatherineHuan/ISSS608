@@ -16,7 +16,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 
@@ -81,8 +81,6 @@ participants$AgeGroup <- cut(participants$Age, breaks=brks, labels = grps)
 
 
 ```
-
-
 
 
 
