@@ -81,10 +81,7 @@ participants$AgeGroup <- cut(participants$Age, breaks=brks, labels = grps)
 
 
 ```
-```{r}
 
-
-```
 
 
 
