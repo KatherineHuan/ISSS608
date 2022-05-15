@@ -30,58 +30,211 @@ In this exercise, we will explore different perspectives and approaches to creat
 
 # 2. Data Preparation
 
-**Installing and loading the required libraries**
+## 2.1 Installing and loading the required libraries
+
+Before we get started, it is important for us to ensure that the required R packages have been installed. If yes, we will load the R packages. If they have yet to be installed, we will install the R packages and load them onto R environment.
+
+The chunk code on the right will do the trick.
 
 ```{r}
-packages = c('tidyverse', 'knitr', 
-             'ggdist', 'scales', 
-             'grid', 'formattable', 
-             'gridExtra', 'patchwork')
-
-for (p in packages){
+packages = c('tidyverse', 'knitr', 'ggdist', 'ggridges',
+             'scales', 'grid', 'gridExtra','plotly',
+             'ggrepel', 'formattable', 'patchwork',
+             'lubridate', 'data.table')
+for(p in packages){
   if(!require(p, character.only = T)){
-    install.package(p)
+    install.packages(p)
   }
   library(p, character.only = T)
 }
-library(patchwork)
 ```
 
-**Importing the dataset**
+## 2.2 Importing the dataset
+
+The code chunk below imports *participants.csv* and *FinancialJournal.csv* into R environment using [**read_csv()**](https://readr.tidyverse.org/reference/read_delim.html) function of [**readr**](https://readr.tidyverse.org/) package.
 
 ```{r}
-# read csv file
-#financial <- read_csv('data/FinancialJournal.csv')
 participants <- read_csv('data/Participants.csv')
-
+financial <- read_csv('data/FinancialJournal.csv')
 ```
 
-**Data Wrangling**
+It is always a good practice to examine the imported data frame before further analysis is performed.
+
+For example, *kable()* can be used to review the structure of the imported data frame.
+
+Let's take an overview of the datasets.
+
+```{r, include=FALSE}
+summary(participants)
+summary(financial)
+```
 
 ```{r}
-# rename 'HighSchoolOrCollege'
-participants$educationLevel <- sub('HighSchoolOrCollege', 
-                                    'High School or College',
-                                    participants$educationLevel)
+kable(head(participants))
+kable(head(financial))
+```
 
-# rename columns
-participants <- participants %>%
-  rename('ParticipantID' = 'participantId', 
-         'HouseholdSize' = 'householdSize', 
-         'HaveKids' = 'haveKids', 
-         'Age' = 'age', 
-         'EducationLevel' = 'educationLevel', 
-         'InterestGroup' = 'interestGroup', 
-         'Joviality' = 'joviality')
+## 2.3 Data Wrangling
 
-# Age variable is binned with the following code chunk:
-brks <- c(17, 20, 25, 30, 35, 40, 45, 50, 55, 60)
-grps <- c('20 & Below', '21-25', '26-30', '31-35', '36-40', '41-45','46-50', '51-55', '56-60')
-participants$AgeGroup <- cut(participants$Age, breaks=brks, labels = grps)
+In order to understand the financial health of the residents change over the period, we need to derive income, overall cost and balance of residents in a monthly basis.
+
+### 2.3.1 Dealling with time interval
+
+Monthly income/cost for residents need to be derived to view the change over recorded 15 months. Code chunk below shows how we change time format to monthly basis.
+
+```{r}
+monthlyFinancial <- financial %>% 
+  mutate(yearmonth = format(as.Date(timestamp), "%Y.%m")) %>% 
+  select(-timestamp)
+monthlyFinancial
+```
+
+### 2.3.2 Pivot Dataframe
+
+Firstly, we need to use [**group_by**](https://dplyr.tidyverse.org/reference/group_by.html) to group individual expense and income category. And then use [**summarise**](https://dplyr.tidyverse.org/reference/summarise.html) function to summarize each category.
+
+```{r}
+summarizedFinancial <- monthlyFinancial %>% 
+  group_by(participantId, category, yearmonth) %>% 
+  summarise(monthly_financial = sum(amount))
+summarizedFinancial
+```
+
+Then, the dataframe need to be pivoted using code chunk below.
+
+```{r}
+Financial <- summarizedFinancial %>% 
+  pivot_wider(names_from = category, values_from = monthly_financial)
+Financial[is.na(Financial)] = 0
+Financial
+```
+
+### 2.3.3 Deriving monthly-income, cost-of-ling and balance
+
+To show the change of financial situation of residents during this 15 months,we need to calculate the monthly income , monthly living cost as well as monthly balance and then used them to visualize in the next part.
+
+Residents’ monthly income is derived by calculating the sum of wage.
+
+Cost of living is made up of expenses from education, food, recreation, shelter, and offset the rent adjustment. Residents’ monthly cost of living is derived by calculating the sum of above expenses.
+
+```{r}
+FINANCIAL <- Financial %>% 
+  mutate(monthly_cost = Education + Food + Recreation
+         + Shelter + RentAdjustment) %>% 
+  mutate(monthly_income = Wage) %>% 
+  mutate(monthly_balance = monthly_income + monthly_cost)
+FINANCIAL
+```
 
 
+### 2.3.4 Join tables
+
+In order to show the income and consumption patterns in different groups, we will combine *FINANCIAL* and *participants* dataframe together.
+
+```{r}
+combine <- FINANCIAL %>% 
+  left_join(participants, by = "participantId")
+combine
+```
+
+
+# 3. Visulisations and Insights
+
+## 3.1 How does the financial health of the residents change over the period?
+
+To visualise the financial change during this 15 months, we will use [**ridge**](https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html) plot to show the economic situation
+
+```{r}
+p1 <- ggplot(combine, 
+             aes(x=Wage, 
+                 y=combine$yearmonth, 
+                 fill = factor(stat(quantile)))) +
+  stat_density_ridges(geom = "density_ridges_gradient", 
+                      calc_ecdf = TRUE,
+                      quantiles = 4, 
+                      quantile_lines = TRUE) +
+  scale_fill_viridis_d(name = "Quartiles") +
+  labs(x= "Wage",
+       y= "Time",
+       title="Distribution of Residents' Wage")
+p1
+```
+According to above ridge plot, we can know that residents' wage in 2022 March is higher than the following 14 months.
+
+
+```{r}
+p2 <- ggplot(combine,
+            aes(x = combine$monthly_balance,
+                y = combine$yearmonth))+
+  geom_density_ridges(jittered_points = TRUE,
+                      position = position_points_jitter(width = 0.05, 
+                                                        height = 0),
+                      point_shape = '|', 
+                      point_size = 3, 
+                      point_alpha = 1, 
+                      alpha = 0.7,) +
+  stat_density_ridges(geom = "density_ridges_gradient", calc_ecdf = TRUE) +
+  geom_density_ridges_gradient(scale = 2, rel_min_height = 0.01) +
+  scale_fill_viridis_c(name = "Monthly Balance", direction = -1) +
+  theme(axis.title.y=element_text(angle=0),
+      axis.line = element_line(color='grey'), 
+      plot.title = element_text(hjust = 0.5),
+      axis.title.y.left = element_text(vjust = 0.5,), 
+      axis.text = element_text(face="bold")) +
+  labs(x= "Monthly Balance",
+       y= "Time",
+       title="Distribution of Residents' Monthly Balance")
+
+p2
+```
+
+Accordingly, the distribution of monthly balance is in a similar pattern. And the dot plot delow the ridge plot shows that people with higher balance is affected even more serious.
+
+## 3.2 How do wages compare to the overall cost of living in Engagement? 
+
+```{r}
+plot_ly(data = combine,
+        x = ~Wage,
+        y = ~monthly_cost,
+        text = ~paste("Period:", yearmonth,
+                      "<br>Balance:", monthly_balance),
+        color = ~yearmonth) %>%
+  layout(title = 'Monthly Wage versus Monthly Living Cost',
+         ylabel = 'Monthly Cost of Living')
+
+```
+
+Residents
+
+
+## 3.3 Are there groups that appear to exhibit similar patterns? 
+
+- Financial patterns in different education levels
+
+```{r}
+edu_financial <- combine %>% 
+  select(educationLevel, yearmonth, monthly_income, 
+         monthly_cost, monthly_balance) %>% 
+  group_by(educationLevel) %>%
+  summarise(avgIncome = mean(monthly_income),
+            medianIncome =median(monthly_income),
+            avgCost = mean(monthly_cost),
+            avgBalance = mean(monthly_balance))
+edu_financial
 ```
 
 
 
 
+- Financial patterns in different interest group
+
+```{r}
+interest_financial <- combine %>% 
+  select(interestGroup, yearmonth, monthly_income, 
+         monthly_cost, monthly_balance) %>% 
+  group_by(interestGroup,yearmonth) %>%
+  summarise(avgIncome = mean(monthly_income),
+            avgCost = mean(monthly_cost),
+            avgBalance = mean(monthly_balance))
+interest_financial
+```
