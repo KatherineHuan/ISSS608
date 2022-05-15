@@ -280,7 +280,7 @@ The density plot shows that there are more people from higher the education leve
 Below,  [**ggdist**](https://mjskay.github.io/ggdist/index.html) package is used to plot raincloud plots so as to show more details of the distribution of monthly balance in diffrent education level. 
 
 ```{r}
-ggplot(combine, aes(x = educationLevel, 
+p <- ggplot(combine, aes(x = educationLevel, 
                     y = monthly_balance)) +
   scale_y_continuous(breaks = seq(0, 18000, 3000), 
                      limits = c(0, 18000)) +
@@ -309,7 +309,8 @@ ggplot(combine, aes(x = educationLevel,
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5))+
   coord_flip()
-
+p
+ggplotly(p)
 ```
 
 A combination of raincloud plot, boxplot and dot plot are used here. It further clarify our belief that education level means a lot to the wealth accumulation.
