@@ -40,7 +40,8 @@ The chunk code on the right will do the trick.
 packages = c('tidyverse', 'knitr', 'ggdist', 'ggridges',
              'scales', 'grid', 'gridExtra','plotly',
              'ggrepel', 'formattable', 'patchwork',
-             'lubridate', 'data.table')
+             'ggiraph', 'lubridate', 'data.table',
+             'ggthemes','gganimate','gifski','gapminder')
 for(p in packages){
   if(!require(p, character.only = T)){
     install.packages(p)
@@ -82,20 +83,49 @@ In order to understand the financial health of the residents change over the per
 
 Monthly income/cost for residents need to be derived to view the change over recorded 15 months. Code chunk below shows how we change time format to monthly basis.
 
+**Switch to monthly basis**
+
 ```{r}
 monthlyFinancial <- financial %>% 
   mutate(yearmonth = format(as.Date(timestamp), "%Y.%m")) %>% 
   select(-timestamp)
 monthlyFinancial
 ```
+**Convert 15 months into serial numbers**
+
+- Build a function to convertion 
+
+```{r}
+mon_convert <- function(y, m){mon = 12*(y-2022)+m-2}
+print(mon_convert(2023,5))
+```
+
+- Convert time format to year and month
+
+```{r, include = FALSE}
+year_month <- financial %>% 
+  mutate(yearmonth = format(as.Date(timestamp), "%Y.%m")) %>% 
+  mutate(y = year(timestamp)) %>% 
+  mutate(m = month(timestamp))
+year_month
+```
+
+- Convert 15 months into serial numbers
+
+```{r}
+MonthlyFinancial <- year_month %>%
+  mutate(SerialMonth = mon_convert(year_month$y, year_month$m))
+summary(MonthlyFinancial$SerialMonth)
+```
+
 
 ### 2.3.2 Pivot Dataframe
 
 Firstly, we need to use [**group_by**](https://dplyr.tidyverse.org/reference/group_by.html) to group individual expense and income category. And then use [**summarise**](https://dplyr.tidyverse.org/reference/summarise.html) function to summarize each category.
 
 ```{r}
-summarizedFinancial <- monthlyFinancial %>% 
-  group_by(participantId, category, yearmonth) %>% 
+summarizedFinancial <- MonthlyFinancial %>% 
+  group_by(participantId, category, SerialMonth, yearmonth) %>% 
   summarise(monthly_financial = sum(amount))
 summarizedFinancial
 ```
@@ -109,7 +139,7 @@ Financial[is.na(Financial)] = 0
 Financial
 ```
 
-### 2.3.3 Deriving monthly-income, cost-of-ling and balance
+### 2.3.3 Deriving monthly-income, cost-of-ling and monthly-balance
 
 To show the change of financial situation of residents during this 15 months,we need to calculate the monthly income , monthly living cost as well as monthly balance and then used them to visualize in the next part.
 
@@ -137,7 +167,6 @@ combine <- FINANCIAL %>%
 combine
 ```
 
-
 # 3. Visulisations and Insights
 
 ## 3.1 How does the financial health of the residents change over the period?
@@ -159,6 +188,7 @@ p1 <- ggplot(combine,
        title="Distribution of Residents' Wage")
 p1
 ```
+
 According to above ridge plot, we can know that residents' wage in 2022 March is higher than the following 14 months.
 
 
@@ -176,6 +206,14 @@ p2 <- ggplot(combine,
   stat_density_ridges(geom = "density_ridges_gradient", calc_ecdf = TRUE) +
   geom_density_ridges_gradient(scale = 2, rel_min_height = 0.01) +
   scale_fill_viridis_c(name = "Monthly Balance", direction = -1) +
+  geom_vline(aes(xintercept=mean(combine$monthly_balance, na.rm=T)),
+             color="red", 
+             linetype="dashed", 
+             size=0.5) +
+  geom_vline(aes(xintercept=median(combine$monthly_balance, na.rm=T)),
+             color="blue",
+             linetype="dashed", 
+             size=0.5) +
   theme(axis.title.y=element_text(angle=0),
       axis.line = element_line(color='grey'), 
       plot.title = element_text(hjust = 0.5),
@@ -195,7 +233,7 @@ Accordingly, the distribution of monthly balance is in a similar pattern. And th
 ```{r}
 plot_ly(data = combine,
         x = ~Wage,
-        y = ~monthly_cost,
+        y = abs(combine$monthly_cost),
         text = ~paste("Period:", yearmonth,
                       "<br>Balance:", monthly_balance),
         color = ~yearmonth) %>%
@@ -204,37 +242,177 @@ plot_ly(data = combine,
 
 ```
 
-Residents
-
+Residents' wages are more widely distributed in the early stage and perform in a similar pattern after the 1st month.
 
 ## 3.3 Are there groups that appear to exhibit similar patterns? 
 
-- Financial patterns in different education levels
+### 3.3.1 Financial patterns in different education levels
+
+**Distribution of monthly balance versus education level**
+
+First, Let's have a general overview of the distribution of monthly balance with different education level.
 
 ```{r}
-edu_financial <- combine %>% 
-  select(educationLevel, yearmonth, monthly_income, 
-         monthly_cost, monthly_balance) %>% 
-  group_by(educationLevel) %>%
-  summarise(avgIncome = mean(monthly_income),
-            medianIncome =median(monthly_income),
-            avgCost = mean(monthly_cost),
-            avgBalance = mean(monthly_balance))
-edu_financial
+p <- ggplot(data = combine,
+            aes(x=monthly_balance,
+                color = educationLevel)) +
+  geom_density() +
+  labs(x= "Monthly Balance",
+       y= "Density",
+       title="Density distribution of Residents' Monthly Balance",
+       subtitle= 'Demographics in Engagement, Ohio',
+       caption = "Source: VAST Challenge 2022") +
+  theme(panel.background = element_blank(),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        axis.title.y = element_text(angle=0,vjust = 0.5),
+        axis.ticks.x = element_blank(),
+        axis.line= element_line(color= 'grey'),
+        axis.text.x = element_text(size=8,angle=0),
+        panel.grid.major.y = element_line(color= 'grey', size = 0.1),
+        plot.caption = element_text(hjust=0),
+        legend.key = element_rect(fill= NA))
+ggplotly(p)
 ```
 
+The density plot shows that there are more people from higher the education level for the higher monthly balance.
 
-
-
-- Financial patterns in different interest group
+Below,  [**ggdist**](https://mjskay.github.io/ggdist/index.html) package is used to plot raincloud plots so as to show more details of the distribution of monthly balance in diffrent education level. 
 
 ```{r}
-interest_financial <- combine %>% 
-  select(interestGroup, yearmonth, monthly_income, 
-         monthly_cost, monthly_balance) %>% 
-  group_by(interestGroup,yearmonth) %>%
-  summarise(avgIncome = mean(monthly_income),
-            avgCost = mean(monthly_cost),
-            avgBalance = mean(monthly_balance))
-interest_financial
+ggplot(combine, aes(x = educationLevel, 
+                    y = monthly_balance)) +
+  scale_y_continuous(breaks = seq(0, 18000, 3000), 
+                     limits = c(0, 18000)) +
+  stat_halfeye(adjust = 0.5, 
+               width = .66, 
+               color = NA,
+               justification = -.01,
+               position = position_nudge(x = .15)) + 
+  geom_boxplot(width = .20,
+               outlier.shape = NA) +
+  stat_summary(geom = "point",
+               fun.y = "mean",
+               colour = "red",
+               size = 1) +
+  stat_dots(side = "left",
+            justification = 1.3, 
+            binwidth = .25,
+            dotsize = 5) +
+  scale_color_manual(name= 'Statistics',
+                   values = (Mean= '#f6546a')) +
+  labs(title = 'Monthly Balance in Groups with Diffrent Education Levels', 
+       x = 'Education Level', 
+       y = 'Monthly Balance',
+       subtitle= 'Demographics in Engagement, Ohio',
+       caption = "Source: VAST Challenge 2022") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))+
+  coord_flip()
+
 ```
+
+A combination of raincloud plot, boxplot and dot plot are used here. It further clarify our belief that education level means a lot to the wealth accumulation.
+
+**Distribution of monthly income versus cost in different education levels**
+
+The code chunk below shows the change of monthly cost versus monthly income during this 15 months in an iteratively way.
+
+```{r}
+ggplot(combine, aes(x = monthly_income, 
+                    y = abs(monthly_cost),
+                    size = Wage,
+                    colour = combine$educationLevel)) +
+  geom_point(alpha = 0.5, 
+             show.legend = TRUE) +
+  labs(title = 'Month: {frame_time}', 
+       x = 'Monthly Cost', 
+       y = 'Monthly Income') +
+  transition_time(as.integer(SerialMonth)) +
+  ease_aes('linear')
+```
+
+In the beginning, the change of income and cost changed quickly, then it leveled off.
+
+### 3.3.2 Financial patterns in different interest group
+
+**Distribution of Monthly Income of Residents from Diffrent Interest Group**
+
+```{r}
+tooltip <- function(y, ymax, accuracy = .01) {
+  mean <- scales::number(y, accuracy = accuracy)
+  sem <- scales::number(ymax - y, accuracy = accuracy)
+  paste("Mean Income per Month:", mean, "+/-", sem)
+} 
+p <- ggplot(data=combine,
+            aes(x = interestGroup),) +
+  stat_summary(aes(y = monthly_income, 
+                   tooltip = after_stat(tooltip(y, ymax))),
+               fun.data = "mean_se",
+               geom = GeomInteractiveCol,
+               fill = "light blue") +
+  stat_summary(aes(y = monthly_income),
+               fun.data = mean_se,
+               geom = "errorbar", width = 0.2, size = 0.2) +
+  labs(title = 'Monthly Income of Residents from Diffrent Interest Group', 
+       x = 'Interest Group', 
+       y = 'Monthly Income',
+       subtitle= 'Demographics in Engagement, Ohio',
+       caption = "Source: VAST Challenge 2022") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+girafe(ggobj = p,
+       width_svg = 8,
+       height_svg = 8*0.618)
+```
+
+Table above shows that the average wage of residents having interest of D is the highest and that of F is the lowest.
+
+**Distribution of Monthly Cost of Residents from Diffrent Interest Group**
+
+```{r}
+p <- ggplot(combine, aes(x = interestGroup, 
+                    y = abs(monthly_cost))) +
+  scale_y_continuous(breaks = seq(0, 5000, 1000), 
+                     limits = c(0, 5000)) +
+  stat_halfeye(adjust = 0.5, 
+               width = .66, 
+               color = NA,
+               justification = -.01,
+               position = position_nudge(x = .15)) + 
+  geom_boxplot(width = .20,
+               outlier.shape = NA) +
+  stat_summary(geom = "point",
+               fun.y = "mean",
+               colour = "red",
+               size = 1) +
+  stat_dots(side = "left",
+            justification = 1.3, 
+            binwidth = .25,
+            dotsize = 5) +
+  scale_color_manual(name= 'Statistics',
+                   values = (Mean= '#f6546a')) +
+  labs(title = 'Monthly Cost of Residents from Diffrent Interest Group', 
+       x = 'Interest Group', 
+       y = 'Monthly Cost',
+       subtitle= 'Demographics in Engagement, Ohio',
+       caption = "Source: VAST Challenge 2022") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))+
+  coord_flip()
+p
+ggplotly(p)
+
+```
+
+While the mean income of those from interest group F is the lowest, it's atotally a different case for the mean of the cost. The average cost of those from interest group F is the highest.
+
+# 4. Conclusions
+
+- Interactivity is important in visual analysis, but it should be used appropriately, focused on the main point, and not obscured the core meaning of data for the sake of animation.
+
+- In visual analysis, we should try a variety of methods from a variety of perspectives, so as to choose the most suitable.
+
+
+
