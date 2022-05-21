@@ -1,0 +1,209 @@
+---
+title: "In-class Ex 06"
+description: |
+ We will learn how to handling, processing, visualising and analysing movement data using R
+author:
+  - name: Huan Li
+    url: https://linkedin.com/in/huan-li-ab7498124/
+    affiliation: SMU, SCIS, Master of IT in Business
+    affiliation_url: https://scis.smu.edu.sg/master-it-business/about-mitb-main
+date: "`r Sys.Date()`"
+output: distill::distill_article
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE, fig.retina = 3)
+```
+
+# Visualising Geographical Data
+
+## Setting up R packages
+
+Install and launch readr, sf and tmap packages of R
+ 
+```{r}
+packages = c('sf','tmap','tidyverse','clock',
+             'lubridate','sftime','rmarkdown')
+for (p in packages){
+  if(!require(p, character.only = T)){
+    install.packages(p)
+  }
+}
+```
+
+## Importing data
+
+```{r}
+schools <- read_sf("data/wkt/Schools.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+apartments <- read_sf("data/wkt/Apartments.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+buildings <- read_sf("data/wkt/Buildings.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+employers <- read_sf("data/wkt/Employers.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+jobs <- read_sf("data/wkt/Jobs.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+participants <- read_sf("data/wkt/Participants.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+pubs <- read_sf("data/wkt/Pubs.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+restaurants <- read_sf("data/wkt/Restaurants.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+```
+
+**Structure of a simple point feature data**
+
+```{r}
+print(schools)
+```
+
+**Structure of a simple polygon feature data.frame**
+
+```{r}
+print(buildings)
+```
+
+## Plotting the building footprint map: tmap methods
+
+```{r}
+tmap_mode("view")
+tm_shape(buildings)+
+tm_polygons(col = "grey60",
+           size = 1,
+           border.col = "black",
+           border.lwd = 1)
+tmap_mode("plot")
+```
+
+## Plotting a composite map: tmap methods
+
+The code chunk below is used to plot a composite map by combining the buildings and employers simple feature data.frames.
+
+
+```{r}
+tmap_mode("plot")
+tm_shape(buildings)+
+tm_polygons(col = "grey60",
+           size = 1,
+           border.col = "black",
+           border.lwd = 1) +
+tm_shape(employers) +
+  tm_dots(col = "red")
+```
+
+# Movement Data
+
+In this section, WE will learn how to handle, process, visualise and analyse movement data. For the purpose of this hands-on exercise, ParticipantStatusLogs1.csv will be used.
+
+## Importing wkt data
+
+```{r echo=FALSE, eval=FALSE}
+logs <- read_sf("data/wkt/ParticipantStatusLogs1.csv", 
+                options = "GEOM_POSSIBLE_NAMES=currentLocation")
+```
+
+
+## Processing movement data
+
+```{r, echo=FALSE, eval=FALSE}
+logs_selected <- logs %>%
+  mutate(Timestamp = clock::date_time_parse(timestamp,
+                                     zone = "",
+                                     format = "%Y-%m-%dT%H:%M:%S")) %>%
+  mutate(day = clock::get_day(Timestamp)) %>%
+  filter(currentMode =="Transport")
+```
+
+```{r, echo=FALSE, eval=FALSE}
+write_rds(logs_selected,
+          "data/rds/logs_selected.rds")
+```
+
+```{r}
+logs_selected <- read_rds("data/rds/logs_selected.rds")
+```
+
+## Hexagon Binning Map
+
+### Computing the haxegons
+
+```{r}
+hex <- st_make_grid(buildings, 
+                    cellsize=100, 
+                    square=FALSE) %>%
+  st_sf() %>%
+  rowid_to_column('hex_id')
+plot(hex)
+```
+
+### Performing point in polygon overlay
+
+```{r}
+points_in_hex <- st_join(logs_selected, 
+                         hex, 
+                         join=st_within)
+plot(points_in_hex, pch='.')
+```
+
+### Performing point in polygon count
+
+```{r}
+points_in_hex <- st_join(logs_selected, 
+                        hex, 
+                        join=st_within) %>%
+  st_set_geometry(NULL) %>%
+  count(name='pointCount', hex_id)
+head(points_in_hex)
+```
+
+### Performing relational join
+
+```{r}
+hex_combined <- hex %>%
+  left_join(points_in_hex, 
+            by = 'hex_id') %>%
+  replace(is.na(.), 0)
+```
+
+### Plotting the hexagon binning mapp
+
+```{r}
+tm_shape(hex_combined %>%
+           filter(pointCount > 0))+
+  tm_fill("pointCount",
+          n = 8,
+          style = "quantile") +
+  tm_borders(alpha = 0.1)
+```
+
+## Plotting Movement Path using R
+
+```{r}
+logs_path <- logs_selected %>%
+  group_by(participantId, day) %>%
+  summarize(m = mean(Timestamp), 
+            do_union=FALSE) %>%
+  st_cast("LINESTRING")
+```
+
+```{r}
+logs_path_selected <- logs_path %>% 
+  filter(participantId==0)
+tmap_mode("plot")
+tm_shape(buildings)+
+tm_polygons(col = "grey60",
+           size = 1,
+           border.col = "black",
+           border.lwd = 1) +
+  tm_shape(logs_path_selected) +
+  tm_facets(by = 'day') +
+  tm_lines(col = "blue")
+```
