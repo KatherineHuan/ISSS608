@@ -7,22 +7,20 @@ author:
     url: https://linkedin.com/in/huan-li-ab7498124/
     affiliation: SMU, SCIS, Master of IT in Business
     affiliation_url: https://scis.smu.edu.sg/master-it-business/about-mitb-main
-date: "`r Sys.Date()`"
 output:
   distill::distill_article:
     toc: true
     toc_float: true
-    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
 # 1. Overview
 
-With reference to Challenge 2 of [**VAST Challenge 2022**](https://vast-challenge.github.io/2022/), we are required to reveal the daily routines of two selected participant of the city of Engagement, Ohio USA. For the purpose of this take-home exercise, [**ViSIElse**](https://cran.r-project.org/web/packages/ViSiElse/index.html) and other appropriate visual analytics methods.
+With reference to Challenge 2 of [**VAST Challenge 2022**](https://vast-challenge.github.io/2022/), we are required to reveal the daily routines of two selected participant of the city of Engagement, Ohio USA. For the purpose of this take-home exercise,[**ggplot2**](https://ggplot2.tidyverse.org/) and [**ViSIElse**](https://cran.r-project.org/web/packages/ViSiElse/index.html) and other appropriate visual analytics methods will be used.
 
 # 2. Data Preparation
 
@@ -36,7 +34,8 @@ The chunk code on the right will do the trick.
 packages = c('scales', 'viridis', 
              'lubridate', 'ggthemes', 
              'gridExtra', 'tidyverse', 
-             'readxl', 'knitr',
+             'readxl', 'knitr','tmap',
+             'timetk','calendR','sf',
              'data.table', 'ViSiElse')
 for(p in packages){
   if(!require(p, character.only = T)){
@@ -48,8 +47,231 @@ for(p in packages){
 
 ## 2.2 Importing the dataset
 
-### read_csv
+### Read .csv
 
 ```{r, echo=TRUE, eval=FALSE}
 log1 <- read_csv('data/ParticipantStatusLogs1.csv')
+log2 <- read_csv('data/ParticipantStatusLogs2.csv')
+```
+
+
+### Find the Participants with the Highest and Lowest Wage
+
+```{r, echo=TRUE, eval=FALSE}
+financial <- read_rds("data/rds/FinancialPivot.rds")
+
+financialCalculate <- financial %>% 
+  group_by(participantId) %>% 
+  summarise(wage = mean(Wage))
+participantHighest <- financialCalculate %>% 
+  filter(wage == max(financialCalculate$wage))
+participantLowest <- financialCalculate %>% 
+  filter(wage == min(financialCalculate$wage))
+```
+
+```{r, echo=TRUE, eval=FALSE}
+selected <- c(participantHighest$participantId,participantLowest$participantId)
+selected_log1 <- log1 %>% 
+  filter(participantId %in% selected)
+selected_log2 <- log2 %>% 
+  filter(participantId %in% selected)
+print(selected_log1)
+print(selected_log2)
+```
+
+### Save to .rds Format
+
+```{r, echo=FALSE, eval=FALSE}
+write_rds(selected_log1,
+          "data/rds/selected_log1.rds")
+write_rds(selected_log2,
+          "data/rds/selected_log2.rds")
+```
+
+### Read .rds File
+
+```{r}
+log1 <- read_rds("data/rds/selected_log1.rds")
+log2 <- read_rds("data/rds/selected_log2.rds")
+logs <- rbind(log1,log2)
+max(log1$timestamp)
+```
+
+It is always a good practice to examine the imported data frame before further analysis is performed.
+
+Let's take an overview of the datasets.
+
+```{r}
+print(logs)
+```
+
+Let us examine the structure of log1 simple feature data.frame by using glimpse().
+
+```{r}
+glimpse(logs)
+```
+
+## 2.3 Transform Date Format
+
+```{r}
+logs$date <- as.Date(logs$timestamp)
+logs$day <- weekdays(logs$date)
+logs$year <- year(ymd(logs$date))
+print(logs)
+```
+
+# 3.  Daily Routines Visualisation
+
+## 3.1 Routines on Monday (2022-03-07) 
+
+```{r}
+Day <- 'Monday'
+Monday <- logs %>% 
+  filter(day == Day)
+Monday$endtime <- Monday$timestamp + minutes(5)
+Monday
+```
+
+
+```{r}
+p1 <- ggplot()+
+  geom_segment(data=Monday,
+               mapping=aes(x=timestamp, xend=endtime,
+                           y=currentMode, yend = currentMode, 
+                           color= currentMode),
+               size=6) +
+  facet_grid(.~participantId~.) +
+  theme(legend.position = 'right',
+        legend.title=element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        text = element_text(size=10)) +
+  labs(title="Monday's Routines of Participant with Highest/Lowest Eage",
+       subtitle=Day)
+
+p1
+```
+
+Prticipant ID 18 is the one having the highest  monthly average wage;
+Prticipant ID 719 is the one having the Lowest  monthly average wage.
+Figure above shows that on monday, the one with the highest  monthly average wage get out to work earlier and spend no time on recreation.
+
+```{r}
+p2 <- ggplot()+
+  geom_segment(data=Monday,
+               mapping=aes(x=timestamp, xend=endtime,
+                           y=hungerStatus, yend = hungerStatus, 
+                           color= hungerStatus),
+               size=6) +
+  facet_grid(.~participantId~.) +
+  theme(legend.position = 'right',
+        legend.title=element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        text = element_text(size=10))
+
+p2
+```
+
+Figure above shows that on monday, the participant having the highest  monthly average wage does not have dinner and have a longer starving time.
+
+```{r}
+p3 <- ggplot()+
+  geom_segment(data=Monday,
+               mapping=aes(x=timestamp, xend=endtime,
+                           y=sleepStatus, yend = sleepStatus, 
+                           color= sleepStatus),
+               size=6) +
+  facet_grid(.~participantId~.) +
+  theme(legend.position = 'right',
+        legend.title=element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        text = element_text(size=10))
+
+p3
+```
+
+Figure above shows that on monday, the participant having the highest  monthly average wage fall asleep earlier and get up earlier.
+
+## 3.2 Routines on Sunday (2022-03-06)
+
+```{r}
+Day <- 'Sunday'
+Sunday <- logs %>% 
+  filter(day == Day)
+Sunday$endtime <- Sunday$timestamp + minutes(5)
+Sunday
+```
+
+
+```{r}
+p4 <- ggplot()+
+  geom_segment(data=Sunday,
+               mapping=aes(x=timestamp, xend=endtime,
+                           y=currentMode, yend = currentMode, 
+                           color= currentMode),
+               size=6) +
+  facet_grid(.~participantId~.) +
+  theme(legend.position = 'right',
+        legend.title=element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        text = element_text(size=10)) +
+  labs(title="Sunday's Routines of Participant with Highest/Lowest Eage",
+       subtitle=Day)
+
+p4
+```
+
+Figure above shows that on Sunday, compared with the one with the lowest average wage, the participant having the highest  monthly average wage spend  more time at home and less time hanging out for pleasure.
+
+```{r}
+p5 <- ggplot()+
+  geom_segment(data=Sunday,
+               mapping=aes(x=timestamp, xend=endtime,
+                           y=hungerStatus, yend = hungerStatus, 
+                           color= hungerStatus),
+               size=6) +
+  facet_grid(.~participantId~.) +
+  theme(legend.position = 'right',
+        legend.title=element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        text = element_text(size=10))
+
+p5
+```
+
+Figure above shows that even on Sunday, the participant having the highest  monthly average wage still on a diet and does not have dinner, while the other participant will eat food every time he/she feel hungry.
+
+
+```{r}
+p6 <- ggplot()+
+  geom_segment(data=Sunday,
+               mapping=aes(x=timestamp, xend=endtime,
+                           y=sleepStatus, yend = sleepStatus, 
+                           color= sleepStatus),
+               size=6) +
+  facet_grid(.~participantId~.) +
+  theme(legend.position = 'right',
+        legend.title=element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        text = element_text(size=10))
+
+p6
+```
+
+From figures above, we can see that the participant with highest wage(ID18) always have a good habbit , no matter it is monday or weekends.
+
+
+# 4. Conclusions
+
+- ViSiElse package is specially designed for visualising behavioral observation over time.
+
+- Creative spirit is important in visual analytics.After exploration, we can find that ggplot2 also can be used to visualize daily routines.
+
+- There is more than one way to visulise what we want, keep trying to find an appropriate method.
+
 
