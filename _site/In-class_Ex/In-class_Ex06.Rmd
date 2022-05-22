@@ -105,7 +105,7 @@ In this section, WE will learn how to handle, process, visualise and analyse mov
 
 ## Importing wkt data
 
-```{r echo=FALSE, eval=FALSE}
+```{r,echo=FALSE, eval=FALSE}
 logs <- read_sf("data/wkt/ParticipantStatusLogs1.csv", 
                 options = "GEOM_POSSIBLE_NAMES=currentLocation")
 ```
