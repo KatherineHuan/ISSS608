@@ -1,0 +1,115 @@
+---
+title: "Take-home Exercise 4"
+description: |
+  In this exercise, we need to reveal the daily routines of two selected participant of the city of Engagement, Ohio USA.
+author:
+  - name: Huan Li
+    url: https://linkedin.com/in/huan-li-ab7498124/
+    affiliation: SMU, SCIS, Master of IT in Business
+    affiliation_url: https://scis.smu.edu.sg/master-it-business/about-mitb-main
+date: "`r Sys.Date()`"
+output:
+  distill::distill_article:
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+# 1. Overview
+
+With reference to Challenge 2 of [**VAST Challenge 2022**](https://vast-challenge.github.io/2022/), we are required to reveal the daily routines of two selected participant of the city of Engagement, Ohio USA. For the purpose of this take-home exercise, [**ViSIElse**](https://cran.r-project.org/web/packages/ViSiElse/index.html) and other appropriate visual analytics methods.
+
+# 2. Data Preparation
+
+## 2.1 Installing and loading the required libraries
+
+Before we get started, it is important for us to ensure that the required R packages have been installed. If yes, we will load the R packages. If they have yet to be installed, we will install the R packages and load them onto R environment.
+
+The chunk code on the right will do the trick.
+
+```{r}
+packages = c('scales', 'viridis', 
+             'lubridate', 'ggthemes', 
+             'gridExtra', 'tidyverse', 
+             'readxl', 'knitr',
+             'data.table', 'ViSiElse')
+for(p in packages){
+  if(!require(p, character.only = T)){
+    install.packages(p)
+  }
+  library(p, character.only = T)
+}
+```
+
+## 2.2 Importing the dataset
+
+The code chunk below imports *ParticipantStatusLogs1.csv* into R environment using [**read_sf()**](https://r-spatial.github.io/sf/reference/st_read.html) function of [**readr**](https://r-spatial.github.io/sf/index.html) package and save it as a simple feature data.frame.
+
+```{r echo=FALSE, eval=FALSE}
+log1 <- read_csv('data/ParticipantStatusLogs1.csv')
+```
+
+### Find the Participants with the Highest and Lowest Wage
+
+```{r}
+financial <- read_rds("data/rds/FinancialPivot.rds")
+
+financialCalculate <- financial %>% 
+  group_by(participantId) %>% 
+  summarise(wage = mean(Wage))
+participantHighest <- financialCalculate %>% 
+  filter(wage == max(financialCalculate$wage))
+participantLowest <- financialCalculate %>% 
+  filter(wage == min(financialCalculate$wage))
+```
+
+```{r}
+selected_ids <- c(participantHighest$participantId,participantLowest$participantId)
+selected_log <- log1 %>% 
+  filter(participantId %in% selected_ids)
+print(selected_log)
+```
+
+**Save to RDS Format**
+
+```{r, echo=FALSE, eval=FALSE}
+write_rds(selected_log,
+          "data/rds/selected_log.rds")
+```
+
+**Read RDS File**
+
+```{r}
+log <- read_rds("data/rds/selected_log.rds")
+```
+
+It is always a good practice to examine the imported data frame before further analysis is performed.
+
+Let's take an overview of the datasets.
+
+```{r}
+print(log)
+```
+
+Let us examine the structure of log1 simple feature data.frame by using glimpse().
+
+```{r}
+glimpse(log)
+```
+
+
+
+
+# 4. Conclusions
+
+- Interactivity is important in visual analysis, but it should be used appropriately, focused on the main point, and not obscured the core meaning of data for the sake of animation.
+
+- In visual analysis, we should try a variety of methods from a variety of perspectives, so as to choose the most suitable.
+
+
+
