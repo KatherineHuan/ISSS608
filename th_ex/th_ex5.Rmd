@@ -27,8 +27,8 @@ Patterns of Life considers the patterns of daily life throughout the city.In thi
 
 Questions to be addressed are:
 
-- social areas of the city of Engagement, Ohio USA.
-- visualising and analysing locations with traffic bottleneck of the city of Engagement, Ohio USA.
+- Social areas of the city of Engagement, Ohio USA.
+- Visualising and analysing locations with traffic bottleneck of the city of Engagement, Ohio USA.
 
 # 2. Data Preparation
 
