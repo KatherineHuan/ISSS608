@@ -21,6 +21,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
+
+
+
 # 1. Overview
 
 Patterns of Life considers the patterns of daily life throughout the city.In this exercise, based on dataset [*VAST Challenge 2022*](https://vast-challenge.github.io/2022/), we will explore  the daily routines for some representative people, characterize the travel patterns to identify potential bottlenecks or hazards, and examine how these patterns change over time and seasons. The operation was carried out on Rstudio and main packages used are tidyverse and ggplot2 extensions. 
