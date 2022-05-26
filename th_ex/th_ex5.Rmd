@@ -1,0 +1,81 @@
+---
+title: "Take-home Exercise 5"
+description: |
+  Visualising and analysing social areas and locations with traffic bottleneck of the city of Engagement, Ohio USA.
+
+author:
+  - name: Huan Li
+    url: https://linkedin.com/in/huan-li-ab7498124/
+    affiliation: SMU, SCIS, Master of IT in Business
+    affiliation_url: https://scis.smu.edu.sg/master-it-business/about-mitb-main
+date: "`r Sys.Date()`"
+output:
+  distill::distill_article:
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# 1. Overview
+
+Patterns of Life considers the patterns of daily life throughout the city.In this exercise, based on dataset [*VAST Challenge 2022*](https://vast-challenge.github.io/2022/), we will explore  the daily routines for some representative people, characterize the travel patterns to identify potential bottlenecks or hazards, and examine how these patterns change over time and seasons. The operation was carried out on Rstudio and main packages used are tidyverse and ggplot2 extensions. 
+
+Questions to be addressed are:
+
+- social areas of the city of Engagement, Ohio USA.
+- visualising and analysing locations with traffic bottleneck of the city of Engagement, Ohio USA.
+
+# 2. Data Preparation
+
+## 2.1 Installing and loading the required libraries
+
+Before we get started, it is important for us to ensure that the required R packages have been installed. If yes, we will load the R packages. If they have yet to be installed, we will install the R packages and load them onto R environment.
+
+The chunk code on the right will do the trick.
+```{r}
+
+```
+
+
+
+## 2.2 Importing the dataset
+
+The code chunk below imports *participants.csv* and *FinancialJournal.csv* into R environment using [**read_csv()**](https://readr.tidyverse.org/reference/read_delim.html) function of [**readr**](https://readr.tidyverse.org/) package.
+
+```{r}
+
+
+```
+
+
+It is always a good practice to examine the imported data frame before further analysis is performed.
+
+For example, *kable()* can be used to review the structure of the imported data frame.
+
+Let's take an overview of the datasets
+
+
+```{r}
+
+```
+
+
+## 2.3 Data Wrangling
+
+
+
+# 3. Visulisations and Insights
+
+
+3.1 characterize the distinct social areas of the [**city of Engagement, Ohio USA**](https://vast-challenge.github.io/2022/).
+
+3.2 Where are the busiest areas in Engagement? Are there traffic bottlenecks that should be addressed? 
+
+
+
+

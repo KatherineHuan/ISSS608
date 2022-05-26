@@ -1,0 +1,69 @@
+---
+title: "Take-home Exercise 6"
+description: |
+  Explore and reveal the patterns of community interactions of the city of Engagement, Ohio USA by using social network analysis approach.
+author:
+  - name: Huan Li
+    url: https://linkedin.com/in/huan-li-ab7498124/
+    affiliation: SMU, SCIS, Master of IT in Business
+    affiliation_url: https://scis.smu.edu.sg/master-it-business/about-mitb-main
+date: "`r Sys.Date()`"
+output:
+  distill::distill_article:
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+# 1. Overview
+
+Reveal the patterns of community interactions of the city of Engagement, Ohio USA by using social network analysis approach.
+
+
+
+
+# 2. Data Preparation
+
+## 2.1 Installing and loading the required libraries
+
+Before we get started, it is important for us to ensure that the required R packages have been installed. If yes, we will load the R packages. If they have yet to be installed, we will install the R packages and load them onto R environment.
+
+The chunk code on the right will do the trick.
+```{r}
+
+```
+
+
+
+## 2.2 Importing the dataset
+
+The code chunk below imports *participants.csv* and *FinancialJournal.csv* into R environment using [**read_csv()**](https://readr.tidyverse.org/reference/read_delim.html) function of [**readr**](https://readr.tidyverse.org/) package.
+
+```{r}
+
+
+```
+
+
+It is always a good practice to examine the imported data frame before further analysis is performed.
+
+For example, *kable()* can be used to review the structure of the imported data frame.
+
+Let's take an overview of the datasets
+
+
+```{r}
+
+```
+
+
+## 2.3 Data Wrangling
+
+
+
+# 3. Visulisations and Insights
