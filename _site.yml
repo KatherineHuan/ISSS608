@@ -7,6 +7,7 @@ navbar:
   logo:
     image: images/logo.png
     href: https://www.rstudio.com
+  search: true
   right:
     - text: "Home"
       href: index.html
