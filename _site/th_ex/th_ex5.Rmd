@@ -8,12 +8,12 @@ author:
     url: https://linkedin.com/in/huan-li-ab7498124/
     affiliation: SMU, SCIS, Master of IT in Business
     affiliation_url: https://scis.smu.edu.sg/master-it-business/about-mitb-main
-date: "`r Sys.Date()`"
+# date: "`r Sys.Date()`"
 output:
   distill::distill_article:
     toc: true
     toc_float: true
-    code_folding: hide
+#    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -26,7 +26,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # 1. Overview
 
-Based on dataset [*VAST Challenge 2022*](https://vast-challenge.github.io/2022/), we will explore  and characterize the distinct areas of the city , and characterize the travel patterns to identify potential bottlenecks or hazards, and examine how these patterns change over time. The operation was carried out on Rstudio and main packages used are sf and tidyverse. 
+Based on dataset [*VAST Challenge 2022*](https://vast-challenge.github.io/2022/), we will explore  and characterize the distinct areas of the city , and characterize the travel patterns to identify potential bottlenecks or hazards, and examine how these patterns change over time. The operation was carried out on Rstudio and main packages used are [**sf**](https://r-spatial.github.io/sf/), [**tmap**](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html) and [**tidyverse**](https://www.tidyverse.org/). 
 
 Questions to be addressed are:
 
@@ -35,7 +35,7 @@ Questions to be addressed are:
 
 # 2. Data Preparation
 
-## 2.1 Installing and loading the required libraries
+## 2.1 Installing libraries
 
 Before we get started, it is important for us to ensure that the required R packages have been installed. If yes, we will load the R packages. If they have yet to be installed, we will install the R packages and load them onto R environment.
 
@@ -90,41 +90,205 @@ restaurants <- read_sf("data/Restaurants.csv",
 ```
 
 
+```{r,echo=FALSE, eval=FALSE}
+logs <- read_sf("data/wkt/ParticipantStatusLogs1.csv", 
+                options = "GEOM_POSSIBLE_NAMES=currentLocation")
+```
+
+
 It is always a good practice to examine the imported data frame before further analysis is performed.
 
 Let's take an overview of the datasets
 
 
 ```{r}
+print(buildings)
 print(apartments)
-print(schools)
 ```
+
 
 ## 2.3 Data Wrangling
 
+```{r, echo=FALSE, eval=FALSE}
+logs_selected <- logs %>%
+  mutate(Timestamp = clock::date_time_parse(timestamp,
+                                     zone = "",
+                                     format = "%Y-%m-%dT%H:%M:%S")) %>%
+  mutate(day = clock::get_day(Timestamp)) %>%
+  filter(currentMode =="Transport")
+```
+
+```{r, echo=FALSE, eval=FALSE}
+write_rds(logs_selected,
+          "data/rds/logs_selected.rds")
+```
+
+```{r}
+logs_selected <- read_rds("data/rds/logs_selected.rds")
+```
+
+```{r}
+print(logs_selected)
+```
 
 
 # 3. Visulisations and Insights
 
+## 3.1 Distinct Social Areas
 
-3.1 characterize the distinct social areas of the [**city of Engagement, Ohio USA**](https://vast-challenge.github.io/2022/).
+Characterize the distinct social areas of the [**city of Engagement, Ohio USA**](https://vast-challenge.github.io/2022/).
 
-Plotting a composite map
+### 3.1.1 Building Types Map
 
 ```{r}
-tmap_mode("plot")
-tm_shape(buildings)+
+buildingType <- tm_shape(buildings)+
+tm_polygons(col = "buildingType",
+           palette="Accent",
+           border.col = "black",
+           border.alpha = .5,
+           border.lwd = 0.5)+
+tm_layout(main.title = "Building Types Map",
+          main.title.position = "center",
+          main.title.size = 1,
+          frame = FALSE)+
+tm_compass(size = 2,
+           position = c('right', 'top'))
+
+buildingType
+```
+
+**Insights**
+
+- Figure above shows that there are mainly three areas for commercial use - each have one in the middle, the north and the south, and respectively surrounded by the residential areas.
+
+- We can tell that there are mainly two large school zones and respectively in the north and the south, and also two small school zone in the west.
+
+### 3.1.2 Facility Map
+
+```{r}
+label <- c('Restaurant', 'Pub', 'Employer', 'Apartment', 'School')
+color <- c('blue', 'green', "red", 'purple', 'yellow')
+
+facilitiesMap <- tm_shape(buildings)+
 tm_polygons(col = "grey60",
            size = 1,
            border.col = "black",
            border.lwd = 1) +
+tm_shape(pubs) +
+  tm_dots(col = "green", size = 0.3, alpha= 0.8) +
+tm_shape(restaurants) +
+  tm_dots(col = "blue", size = 0.3, alpha= 0.8) +
+tm_shape(schools) +
+  tm_dots(col = "yellow", size = 0.3, alpha= 0.8)+
 tm_shape(employers) +
-  tm_dots(col = "red")
+  tm_dots(col = "red") +
+tm_shape(apartments) +
+  tm_dots(col = "purple") +
+tm_add_legend(title = 'Facilities',
+              type = 'symbol',
+              border.col = NA,
+              labels = label,
+              col = color) +
+tm_layout(main.title = 'Facilities Map of Engagemnt City, Ohio USA',
+          main.title.size = 1,
+          frame = FALSE) +
+tm_compass(size = 2,
+           position = c('right', 'top'))+
+tm_credits('Source: VAST Challenge 2022')
+
+facilitiesMap
 ```
 
+**Insights**
 
-3.2 Where are the busiest areas in Engagement? Are there traffic bottlenecks that should be addressed? 
+- The map above gives us more details of the city's facilities' layout.There are more restaurants and pubs in the middle and northwest of the city, so we can deduct that there might be more traffic in the weekends in those areas.
+
+- Compared with the southeast corner, there are more apartments in the northwest, so might cause more traffic in the weekdays.
+
+```{r}
+tmap_arrange(buildingType, facilitiesMap, widths = c(1))
+```
+
+**Insights**
+
+- The integrated figure shows that those restaurants, pubs and employers are located in the commercial areas that mainly in the middle.
+
+- The residential zone are at the edges of the city, and the norther , the more residents density.
 
 
+## 3.2 Traffic Situation
+
+Where are the busiest areas in Engagement? Are there traffic bottlenecks that should be addressed? 
+
+### 3.2.1 General Traffic Situation
+
+#### Computing the haxegons
+
+In the code chunk below, st_make_grid() of sf package is used to create haxegons
+
+```{r}
+hex <- st_make_grid(buildings, 
+                    cellsize=100, 
+                    square=FALSE) %>%
+  st_sf() %>%
+  rowid_to_column('hex_id')
+plot(hex)
+```
+
+#### Performing point in polygon count
+
+In the code chunk below, st_join() of sf package is used to count the number of event points in the hexagons.
+
+```{r}
+points_in_hex <- st_join(logs_selected, 
+                        hex, 
+                        join=st_within) %>%
+  st_set_geometry(NULL) %>%
+  count(name='pointCount', hex_id)
+head(points_in_hex)
+```
+
+#### Performing relational join
+
+In the code chunk below, left_join() of dplyr package is used to perform a left-join by using hex as the target table and points_in_hex as the join table. The join ID is hex_id.
+
+```{r}
+hex_combined <- hex %>%
+  left_join(points_in_hex, 
+            by = 'hex_id') %>%
+  replace(is.na(.), 0)
+```
+
+#### Plotting the hexagon binning mapp
+
+In the code chunk below, tmap package is used to create the hexagon binning map.
+
+```{r}
+traffic <- tm_shape(hex_combined %>%
+                      filter(pointCount > 0))+
+  tm_fill("pointCount",
+          n = 8,
+          style = "quantile") +
+  tm_borders(alpha = 0.1)+
+  tm_layout(main.title = 'Traffic of Engagemnt City, Ohio USA',
+            main.title.size = 1,
+            frame = FALSE)
+traffic
+```
+
+```{r}
+tmap_arrange(facilitiesMap,traffic, widths = c(1))
+```
+
+**Insights**
+
+- Map above shows that the main routes connecting the the north-west to the south area and wet to the east of the city are likely to see more traffic.
+
+- There is more traffic in places having schools, restaurant, pubs.
 
 
+# 4. Conclusion
+
+Well-known text (WKT) is a human readable representation for spatial objects like points, lines, or enclosed areas on a map, and helps when doing geo-spatial visualizations,
+
+During this nexercise, we learned how to import geospatial data in wkt format into R and saved the imported data as simple feature objects by using sf package, to map geospatial data using tmap package, to process movement data by using sf and tidyverse packages,and to visualise movement data by using tmap and ggplot2 package.
