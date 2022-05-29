@@ -26,7 +26,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # 1. Overview
 
-Patterns of Life considers the patterns of daily life throughout the city.In this exercise, based on dataset [*VAST Challenge 2022*](https://vast-challenge.github.io/2022/), we will explore  the daily routines for some representative people, characterize the travel patterns to identify potential bottlenecks or hazards, and examine how these patterns change over time and seasons. The operation was carried out on Rstudio and main packages used are tidyverse and ggplot2 extensions. 
+Based on dataset [*VAST Challenge 2022*](https://vast-challenge.github.io/2022/), we will explore  and characterize the distinct areas of the city , and characterize the travel patterns to identify potential bottlenecks or hazards, and examine how these patterns change over time. The operation was carried out on Rstudio and main packages used are sf and tidyverse. 
 
 Questions to be addressed are:
 
@@ -39,7 +39,10 @@ Questions to be addressed are:
 
 Before we get started, it is important for us to ensure that the required R packages have been installed. If yes, we will load the R packages. If they have yet to be installed, we will install the R packages and load them onto R environment.
 
+sf IS an R package specially designed to handle geospatial data in simple feature objects.
+
 The chunk code on the right will do the trick.
+
 ```{r}
 packages = c('sf','tmap','tidyverse','clock',
              'lubridate','sftime','rmarkdown')
@@ -52,27 +55,50 @@ for (p in packages){
 
 
 
-## 2.2 Importing the dataset
+## 2.2 Importing wkt data
 
-The code chunk below imports *participants.csv* and *FinancialJournal.csv* into R environment using [**read_csv()**](https://readr.tidyverse.org/reference/read_delim.html) function of [**readr**](https://readr.tidyverse.org/) package.
+Well-known text (WKT) is a human readable representation for spatial objects like points, lines, or enclosed areas on a map.
+
+Import geospatial data in wkt format into R and saved the imported data as simple feature objects by using sf package
+
+In the code chunk below, read_sf() of sf package is used to parse School.csv Pubs.csv, Apartments.csv, Buildings.csv, Employer.csv, and Restaurants.csv into R as sf data.frames.
 
 ```{r}
+schools <- read_sf("data/Schools.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
 
+apartments <- read_sf("data/Apartments.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
 
+buildings <- read_sf("data/Buildings.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+employers <- read_sf("data/Employers.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+jobs <- read_sf("data/Jobs.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+participants <- read_sf("data/Participants.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+pubs <- read_sf("data/Pubs.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
+
+restaurants <- read_sf("data/Restaurants.csv", 
+                   options = "GEOM_POSSIBLE_NAMES=location")
 ```
 
 
 It is always a good practice to examine the imported data frame before further analysis is performed.
 
-For example, *kable()* can be used to review the structure of the imported data frame.
-
 Let's take an overview of the datasets
 
 
 ```{r}
-
+print(apartments)
+print(schools)
 ```
-
 
 ## 2.3 Data Wrangling
 
@@ -82,6 +108,20 @@ Let's take an overview of the datasets
 
 
 3.1 characterize the distinct social areas of the [**city of Engagement, Ohio USA**](https://vast-challenge.github.io/2022/).
+
+Plotting a composite map
+
+```{r}
+tmap_mode("plot")
+tm_shape(buildings)+
+tm_polygons(col = "grey60",
+           size = 1,
+           border.col = "black",
+           border.lwd = 1) +
+tm_shape(employers) +
+  tm_dots(col = "red")
+```
+
 
 3.2 Where are the busiest areas in Engagement? Are there traffic bottlenecks that should be addressed? 
 
