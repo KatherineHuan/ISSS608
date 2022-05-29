@@ -1,7 +1,9 @@
 ---
-title: "My Website"
+title: "Huan's Analytics Journey"
 description: |
-  Welcome to the website. I hope you enjoy it!
+  Hi! You’ve reached Katherine Li Huan’s website for works done in ISSS608 Visual Analytics course, 2021-22 Apr Term. 
+  
+  Hope you enjoy reading my projects. :)
 site: distill::distill_website
 ---
 

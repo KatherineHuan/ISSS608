@@ -41,7 +41,13 @@ Before we get started, it is important for us to ensure that the required R pack
 
 The chunk code on the right will do the trick.
 ```{r}
-
+packages = c('sf','tmap','tidyverse','clock',
+             'lubridate','sftime','rmarkdown')
+for (p in packages){
+  if(!require(p, character.only = T)){
+    install.packages(p)
+  }
+}
 ```
 
 
