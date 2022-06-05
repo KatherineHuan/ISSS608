@@ -68,6 +68,12 @@ The edges data
 ```
 
 
+The nodes data
+
+```{r}
+
+```
+
 It is always a good practice to examine the imported data frame before further analysis is performed.
 
 For example, *kable()* can be used to review the structure of the imported data frame.

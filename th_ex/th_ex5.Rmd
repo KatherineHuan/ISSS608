@@ -286,29 +286,8 @@ tmap_arrange(facilitiesMap,traffic, widths = c(1))
 
 - There is more traffic in places having schools, restaurant, pubs.
 
-### 3.2.2 Traffic Bottleneck in Weekdays
-
-#### Traffic During the Day
-
-```{r}
-logs_selected <- logs_selected %>%
-  filter(day == 2) %>%
-  mutate(hour = hour(timestamp)) %>% 
-  select(currentLocation, day, hour)
-logs_selected
-```
-
-```{r}
-logs_selected <- logs_selected %>%
-  group_by(currentLocation) %>%
-  summarise(n = n())
-```
 
 
-
-#### Morning peek hour
-
-#### Afternoon peek hour
 
 
 # 4. Conclusion
