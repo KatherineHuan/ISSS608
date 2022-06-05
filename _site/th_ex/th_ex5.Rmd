@@ -287,6 +287,9 @@ tmap_arrange(facilitiesMap,traffic, widths = c(1))
 - There is more traffic in places having schools, restaurant, pubs.
 
 
+
+
+
 # 4. Conclusion
 
 Well-known text (WKT) is a human readable representation for spatial objects like points, lines, or enclosed areas on a map, and helps when doing geo-spatial visualizations,
