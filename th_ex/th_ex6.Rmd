@@ -31,13 +31,13 @@ Processes include:
   - build advanced graph visualisation by incorporating the network geometrics, and
   - build interactive network visualisation using visNetwork package.
 
-# 2. Data Preparation
+# 2. Required libraries and datasets
 
-## 2.1 Installing and loading the required libraries
+## 2.1 Load required packages
 
 Before we get started, it is important for us to ensure that the required R packages have been installed. If yes, we will load the R packages. If they have yet to be installed, we will install the R packages and load them onto R environment.
 
-Here four network data modelling and visualisation packages will be installed and launched. They are igraph, tidygraph, ggraph and visNetwork. Beside these four packages, tidyverse and lubridate, an R package specially designed to handle and wrangling time data will be installed and launched too.
+Here four network data modelling and visualisation packages will be installed and launched. They are igraph, tidygraph, ggraph and visNetwork. Beside these four packages, tidyverse and [lubridate](https://lubridate.tidyverse.org/), an R package specially designed to handle and wrangling time data will be installed and launched too.
 
 The chunk code on the right will do the trick.
 
@@ -54,39 +54,173 @@ for(p in packages){
 }
 ```
 
-
-
-## 2.2 Importing the dataset
+## 2.2 Importing Data
 
 There are two data sets needed. One contains the nodes data and the other contains the edges (also know as link) data.
 
-The edges data
-
-```{r}
+In this step, we will import .csv into RStudio environment by using read_csv() of readr package.
 
 
-```
-
-
-The nodes data
-
-```{r}
-
+```{r,echo=TRUE, eval=FALSE}
+edges <- read_csv("data/SocialNetwork.csv")
+nodes <- read_csv("data/Participants.csv")
 ```
 
 It is always a good practice to examine the imported data frame before further analysis is performed.
 
-For example, *kable()* can be used to review the structure of the imported data frame.
-
-Let's take an overview of the datasets
+Let's take an overview of the datasets, we will examine the structure of the data frame using glimpse() of dplyr.
 
 
-```{r}
+```{r,echo=TRUE, eval=FALSE}
+glimpse(edges)
+glimpse(nodes)
+```
 
+# 3. Data Wrangling
+
+## 3.1 Preprocess the Edges Data
+
+```{r,echo=TRUE, eval=FALSE}
+workdays <- c('Monday','Tuesday','Wednesday','Thursday','Friday')
+
+edges <- edges %>% 
+  mutate(from = participantIdFrom,
+         to = participantIdTo) %>% 
+  mutate(weekday = wday(timestamp,
+                        label = TRUE,
+                        abbr = FALSE)) %>% 
+  mutate(month = month(timestamp,
+                       label = FALSE)) %>%
+  mutate(week = lubridate::week(timestamp)) %>%
+  mutate(when = case_when(weekday %in% workdays ~ "Working-day",
+                          TRUE ~ "Weekends")) %>% 
+  select(from,to,timestamp,weekday,week,when)
+```
+
+## 3.2 Preprocess the Nodes Data
+
+**- Rename 'HighSchoolOrCollege'**
+
+```{r,echo=TRUE, eval=FALSE}
+nodes$educationLevel <- sub('HighSchoolOrCollege',
+                            'High School or College',
+                            nodes$educationLevel)
+```
+
+**- Rename columns**
+
+```{r,echo=TRUE, eval=FALSE}
+
+nodes <- nodes %>% 
+  rename('ID' = 'participantId', 
+         'HouseholdSize' = 'householdSize', 
+         'HaveKids' = 'haveKids', 
+         'Age' = 'age', 
+         'EducationLevel' = 'educationLevel', 
+         'InterestGroup' = 'interestGroup', 
+         'Joviality' = 'joviality')
 ```
 
 
-## 2.3 Data Wrangling
+**- Age Binning**
+
+Age variable is binned with the following code chunk:
+
+```{r,echo=TRUE, eval=FALSE}
+breaks <- c(17, 20, 25, 30, 35, 40, 45, 50, 55, 60)
+groups <- c('20 & Below', '21-25', '26-30',
+            '31-35', '36-40', '41-45',
+            '46-50', '51-55', '56-60')
+nodes$AgeGroup <- cut(nodes$Age, 
+                      breaks=breaks, 
+                      labels = groups)
+```
+
+**- Write and Read rds Files**
+
+```{r,echo=TRUE, eval=FALSE}
+saveRDS(edges, "data/rds/edges.rds")
+saveRDS(nodes, "data/rds/nodes.rds")
+```
+
+
+```{r}
+edges <- read_rds('data/rds/edges.rds')
+nodes <- read_rds('data/rds/nodes.rds')
+```
+
+
+## 3.3 Network Data During Whole Period
+
+**- The Edges Data**
+
+```{r}
+edges_aggregated <- edges %>% 
+  group_by(from,to) %>% 
+  summarise(Weight = n()) %>% 
+  filter(from!=to) %>% 
+  filter(Weight > 1) %>% 
+  ungroup()
+```
+
+```{r}
+hist(edges_aggregated$Weight)
+```
+
+Select edges with weight higher than 200.
+
+```{r}
+edges_aggregated <- edges_aggregated %>% 
+  filter(Weight >200)
+```
+
+```{r}
+glimpse(edges_aggregated)
+```
+
+**- The Nodes Data**
+
+```{r}
+nodes_aggregated <- nodes %>%
+  filter (ID %in% c(edges_aggregated$from,
+                    edges_aggregated$to))
+```
+
+## 3.4 Network Data in Working-days/weekends
+
+**- The Edges Data**
+
+```{r}
+edges_byWork <- edges %>% 
+  group_by(from,to,when) %>% 
+  summarise(Weight = n()) %>% 
+  filter(from!=to) %>% 
+  filter(Weight > 1) %>% 
+  ungroup()
+```
+
+```{r}
+hist(edges_byWork$Weight)
+```
+
+```{r}
+edges_byWork <- edges_byWork %>% 
+  filter(Weight >100)
+```
+
+```{r}
+glimpse(edges_byWork)
+```
+
+**- The Nodes Data**
+
+```{r}
+nodes_work <- nodes %>%
+  filter (ID %in% c(edges_byWork$from,
+                    edges_byWork$to))
+```
+
+
 
 
 

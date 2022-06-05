@@ -93,8 +93,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--  https://schema.org/Article -->
-  <meta property="article:published" itemprop="datePublished" content="2022-06-05" />
-  <meta property="article:created" itemprop="dateCreated" content="2022-06-05" />
+  <meta property="article:published" itemprop="datePublished" content="2022-06-06" />
+  <meta property="article:created" itemprop="dateCreated" content="2022-06-06" />
   <meta name="article:author" content="Huan Li" />
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
@@ -112,7 +112,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Take-home Exercise 6"]},{"type":"character","attributes":{},"value":["Explore and reveal the patterns of community interactions of the city of Engagement, Ohio USA by using social network analysis approach.\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url","affiliation","affiliation_url"]}},"value":[{"type":"character","attributes":{},"value":["Huan Li"]},{"type":"character","attributes":{},"value":["https://linkedin.com/in/huan-li-ab7498124/"]},{"type":"character","attributes":{},"value":["SMU, SCIS, Master of IT in Business"]},{"type":"character","attributes":{},"value":["https://scis.smu.edu.sg/master-it-business/about-mitb-main"]}]}]},{"type":"character","attributes":{},"value":["2022-06-05"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_float","code_folding"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["hide"]}]}]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Take-home Exercise 6"]},{"type":"character","attributes":{},"value":["Explore and reveal the patterns of community interactions of the city of Engagement, Ohio USA by using social network analysis approach.\n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url","affiliation","affiliation_url"]}},"value":[{"type":"character","attributes":{},"value":["Huan Li"]},{"type":"character","attributes":{},"value":["https://linkedin.com/in/huan-li-ab7498124/"]},{"type":"character","attributes":{},"value":["SMU, SCIS, Master of IT in Business"]},{"type":"character","attributes":{},"value":["https://scis.smu.edu.sg/master-it-business/about-mitb-main"]}]}]},{"type":"character","attributes":{},"value":["2022-06-06"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_float","code_folding"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["hide"]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   
@@ -2474,7 +2474,7 @@ distill-header .nav a {
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Take-home Exercise 6","description":"Explore and reveal the patterns of community interactions of the city of Engagement, Ohio USA by using social network analysis approach.","authors":[{"author":"Huan Li","authorURL":"https://linkedin.com/in/huan-li-ab7498124/","affiliation":"SMU, SCIS, Master of IT in Business","affiliationURL":"https://scis.smu.edu.sg/master-it-business/about-mitb-main","orcidID":""}],"publishedDate":"2022-06-05T00:00:00.000+08:00","citationText":"Li, 2022"}
+{"title":"Take-home Exercise 6","description":"Explore and reveal the patterns of community interactions of the city of Engagement, Ohio USA by using social network analysis approach.","authors":[{"author":"Huan Li","authorURL":"https://linkedin.com/in/huan-li-ab7498124/","affiliation":"SMU, SCIS, Master of IT in Business","affiliationURL":"https://scis.smu.edu.sg/master-it-business/about-mitb-main","orcidID":""}],"publishedDate":"2022-06-06T00:00:00.000+08:00","citationText":"Li, 2022"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2496,7 +2496,7 @@ approach.</p></p>
   Huan Li <a href="https://linkedin.com/in/huan-li-ab7498124/" class="uri">https://linkedin.com/in/huan-li-ab7498124/</a> (SMU, SCIS,
 Master of IT in Business)<a href="https://scis.smu.edu.sg/master-it-business/about-mitb-main" class="uri">https://scis.smu.edu.sg/master-it-business/about-mitb-main</a>
   
-<br />2022-06-05
+<br />2022-06-06
 </div>
 
 <div class="d-article">
@@ -2505,12 +2505,23 @@ Master of IT in Business)<a href="https://scis.smu.edu.sg/master-it-business/abo
 <h3>Contents</h3>
 <ul>
 <li><a href="#overview">1. Overview</a></li>
-<li><a href="#data-preparation">2. Data Preparation</a>
+<li><a href="#required-libraries-and-datasets">2. Required libraries and
+datasets</a>
 <ul>
-<li><a href="#installing-and-loading-the-required-libraries">2.1
-Installing and loading the required libraries</a></li>
-<li><a href="#importing-the-dataset">2.2 Importing the dataset</a></li>
-<li><a href="#data-wrangling">2.3 Data Wrangling</a></li>
+<li><a href="#load-required-packages">2.1 Load required
+packages</a></li>
+<li><a href="#importing-data">2.2 Importing Data</a></li>
+</ul></li>
+<li><a href="#data-wrangling">3. Data Wrangling</a>
+<ul>
+<li><a href="#preprocess-the-edges-data">3.1 Preprocess the Edges
+Data</a></li>
+<li><a href="#preprocess-the-nodes-data">3.2 Preprocess the Nodes
+Data</a></li>
+<li><a href="#network-data-during-whole-period">3.3 Network Data During
+Whole Period</a></li>
+<li><a href="#network-data-in-working-daysweekends">3.4 Network Data in
+Working-days/weekends</a></li>
 </ul></li>
 <li><a href="#visulisations-and-insights">3. Visulisations and
 Insights</a></li>
@@ -2527,18 +2538,18 @@ network graph visualisation using appropriate functions of ggraph, -
 compute network geometrics using tidygraph, - build advanced graph
 visualisation by incorporating the network geometrics, and - build
 interactive network visualisation using visNetwork package.</p>
-<h1 id="data-preparation">2. Data Preparation</h1>
-<h2 id="installing-and-loading-the-required-libraries">2.1 Installing
-and loading the required libraries</h2>
+<h1 id="required-libraries-and-datasets">2. Required libraries and
+datasets</h1>
+<h2 id="load-required-packages">2.1 Load required packages</h2>
 <p>Before we get started, it is important for us to ensure that the
 required R packages have been installed. If yes, we will load the R
 packages. If they have yet to be installed, we will install the R
 packages and load them onto R environment.</p>
 <p>Here four network data modelling and visualisation packages will be
 installed and launched. They are igraph, tidygraph, ggraph and
-visNetwork. Beside these four packages, tidyverse and lubridate, an R
-package specially designed to handle and wrangling time data will be
-installed and launched too.</p>
+visNetwork. Beside these four packages, tidyverse and <a href="https://lubridate.tidyverse.org/">lubridate</a>, an R package
+specially designed to handle and wrangling time data will be installed
+and launched too.</p>
 <p>The chunk code on the right will do the trick.</p>
 <div class="layout-chunk" data-layout="l-body">
 <details>
@@ -2560,28 +2571,292 @@ hide
 </div>
 </details>
 </div>
-<h2 id="importing-the-dataset">2.2 Importing the dataset</h2>
+<h2 id="importing-data">2.2 Importing Data</h2>
 <p>There are two data sets needed. One contains the nodes data and the
 other contains the edges (also know as link) data.</p>
-<p>The edges data</p>
+<p>In this step, we will import .csv into RStudio environment by using
+read_csv() of readr package.</p>
 <div class="layout-chunk" data-layout="l-body">
-
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">edges</span> <span class="op">&lt;-</span> <span class="fu">read_csv</span><span class="op">(</span><span class="st">&quot;data/SocialNetwork.csv&quot;</span><span class="op">)</span>
+<span class="va">nodes</span> <span class="op">&lt;-</span> <span class="fu">read_csv</span><span class="op">(</span><span class="st">&quot;data/Participants.csv&quot;</span><span class="op">)</span>
+</code></pre>
 </div>
-<p>The nodes data</p>
-<div class="layout-chunk" data-layout="l-body">
-
+</details>
 </div>
 <p>It is always a good practice to examine the imported data frame
 before further analysis is performed.</p>
-<p>For example, <em>kable()</em> can be used to review the structure of
-the imported data frame.</p>
 <p>Let’s take an overview of the datasets</p>
 <div class="layout-chunk" data-layout="l-body">
-
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="fu">glimpse</span><span class="op">(</span><span class="va">edges</span><span class="op">)</span>
+<span class="fu">glimpse</span><span class="op">(</span><span class="va">nodes</span><span class="op">)</span>
+</code></pre>
 </div>
-<h2 id="data-wrangling">2.3 Data Wrangling</h2>
+</details>
+</div>
+<h1 id="data-wrangling">3. Data Wrangling</h1>
+<h2 id="preprocess-the-edges-data">3.1 Preprocess the Edges Data</h2>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">workdays</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">&#39;Monday&#39;</span>,<span class="st">&#39;Tuesday&#39;</span>,<span class="st">&#39;Wednesday&#39;</span>,<span class="st">&#39;Thursday&#39;</span>,<span class="st">&#39;Friday&#39;</span><span class="op">)</span>
+
+<span class="va">edges</span> <span class="op">&lt;-</span> <span class="va">edges</span> <span class="op">%&gt;%</span> 
+  <span class="fu">mutate</span><span class="op">(</span>from <span class="op">=</span> <span class="va">participantIdFrom</span>,
+         to <span class="op">=</span> <span class="va">participantIdTo</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">mutate</span><span class="op">(</span>weekday <span class="op">=</span> <span class="fu">wday</span><span class="op">(</span><span class="va">timestamp</span>,
+                        label <span class="op">=</span> <span class="cn">TRUE</span>,
+                        abbr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">mutate</span><span class="op">(</span>month <span class="op">=</span> <span class="fu">month</span><span class="op">(</span><span class="va">timestamp</span>,
+                       label <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">mutate</span><span class="op">(</span>week <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/week.html">week</a></span><span class="op">(</span><span class="va">timestamp</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu">mutate</span><span class="op">(</span>when <span class="op">=</span> <span class="fu">case_when</span><span class="op">(</span><span class="va">weekday</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">workdays</span> <span class="op">~</span> <span class="st">&quot;Working-day&quot;</span>,
+                          <span class="cn">TRUE</span> <span class="op">~</span> <span class="st">&quot;Weekends&quot;</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">select</span><span class="op">(</span><span class="va">from</span>,<span class="va">to</span>,<span class="va">timestamp</span>,<span class="va">weekday</span>,<span class="va">week</span>,<span class="va">when</span><span class="op">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+<h2 id="preprocess-the-nodes-data">3.2 Preprocess the Nodes Data</h2>
+<p><strong>- Rename ‘HighSchoolOrCollege’</strong></p>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">nodes</span><span class="op">$</span><span class="va">educationLevel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html">sub</a></span><span class="op">(</span><span class="st">&#39;HighSchoolOrCollege&#39;</span>,
+                            <span class="st">&#39;High School or College&#39;</span>,
+                            <span class="va">nodes</span><span class="op">$</span><span class="va">educationLevel</span><span class="op">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+<p><strong>- Rename columns</strong></p>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">nodes</span> <span class="op">&lt;-</span> <span class="va">nodes</span> <span class="op">%&gt;%</span> 
+  <span class="fu">rename</span><span class="op">(</span><span class="st">&#39;ID&#39;</span> <span class="op">=</span> <span class="st">&#39;participantId&#39;</span>, 
+         <span class="st">&#39;HouseholdSize&#39;</span> <span class="op">=</span> <span class="st">&#39;householdSize&#39;</span>, 
+         <span class="st">&#39;HaveKids&#39;</span> <span class="op">=</span> <span class="st">&#39;haveKids&#39;</span>, 
+         <span class="st">&#39;Age&#39;</span> <span class="op">=</span> <span class="st">&#39;age&#39;</span>, 
+         <span class="st">&#39;EducationLevel&#39;</span> <span class="op">=</span> <span class="st">&#39;educationLevel&#39;</span>, 
+         <span class="st">&#39;InterestGroup&#39;</span> <span class="op">=</span> <span class="st">&#39;interestGroup&#39;</span>, 
+         <span class="st">&#39;Joviality&#39;</span> <span class="op">=</span> <span class="st">&#39;joviality&#39;</span><span class="op">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+<p><strong>- Age Binning</strong></p>
+<p>Age variable is binned with the following code chunk:</p>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">breaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">17</span>, <span class="fl">20</span>, <span class="fl">25</span>, <span class="fl">30</span>, <span class="fl">35</span>, <span class="fl">40</span>, <span class="fl">45</span>, <span class="fl">50</span>, <span class="fl">55</span>, <span class="fl">60</span><span class="op">)</span>
+<span class="va">groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">&#39;20 &amp; Below&#39;</span>, <span class="st">&#39;21-25&#39;</span>, <span class="st">&#39;26-30&#39;</span>,
+            <span class="st">&#39;31-35&#39;</span>, <span class="st">&#39;36-40&#39;</span>, <span class="st">&#39;41-45&#39;</span>,
+            <span class="st">&#39;46-50&#39;</span>, <span class="st">&#39;51-55&#39;</span>, <span class="st">&#39;56-60&#39;</span><span class="op">)</span>
+<span class="va">nodes</span><span class="op">$</span><span class="va">AgeGroup</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cut.html">cut</a></span><span class="op">(</span><span class="va">nodes</span><span class="op">$</span><span class="va">Age</span>, 
+                      breaks<span class="op">=</span><span class="va">breaks</span>, 
+                      labels <span class="op">=</span> <span class="va">groups</span><span class="op">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+<p><strong>- Write and Read rds Files</strong></p>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">saveRDS</a></span><span class="op">(</span><span class="va">edges</span>, <span class="st">&quot;data/rds/edges.rds&quot;</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">saveRDS</a></span><span class="op">(</span><span class="va">nodes</span>, <span class="st">&quot;data/rds/nodes.rds&quot;</span><span class="op">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">edges</span> <span class="op">&lt;-</span> <span class="fu">read_rds</span><span class="op">(</span><span class="st">&#39;data/rds/edges.rds&#39;</span><span class="op">)</span>
+<span class="va">nodes</span> <span class="op">&lt;-</span> <span class="fu">read_rds</span><span class="op">(</span><span class="st">&#39;data/rds/nodes.rds&#39;</span><span class="op">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+<h2 id="network-data-during-whole-period">3.3 Network Data During Whole
+Period</h2>
+<p><strong>- The Edges Data</strong></p>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">edges_aggregated</span> <span class="op">&lt;-</span> <span class="va">edges</span> <span class="op">%&gt;%</span> 
+  <span class="fu">group_by</span><span class="op">(</span><span class="va">from</span>,<span class="va">to</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">summarise</span><span class="op">(</span>Weight <span class="op">=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">from</span><span class="op">!=</span><span class="va">to</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Weight</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">ungroup</span><span class="op">(</span><span class="op">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">edges_aggregated</span><span class="op">$</span><span class="va">Weight</span><span class="op">)</span>
+</code></pre>
+</div>
+</details>
+<p><img src="data:image/png;base64,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" width="624" /></p>
+</div>
+<p>Select edges with weight higher than 200.</p>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">edges_aggregated</span> <span class="op">&lt;-</span> <span class="va">edges_aggregated</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Weight</span> <span class="op">&gt;</span><span class="fl">200</span><span class="op">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="fu">glimpse</span><span class="op">(</span><span class="va">edges_aggregated</span><span class="op">)</span>
+</code></pre>
+</div>
+</details>
+<pre><code>Rows: 4,210
+Columns: 3
+$ from   &lt;dbl&gt; 2, 2, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6,~
+$ to     &lt;dbl&gt; 69, 176, 29, 92, 113, 221, 882, 953, 82, 136, 203, 10~
+$ Weight &lt;int&gt; 244, 279, 206, 355, 315, 397, 209, 383, 276, 357, 275~</code></pre>
+</div>
+<p><strong>- The Nodes Data</strong></p>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">nodes_aggregated</span> <span class="op">&lt;-</span> <span class="va">nodes</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span> <span class="op">(</span><span class="va">ID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">edges_aggregated</span><span class="op">$</span><span class="va">from</span>,
+                    <span class="va">edges_aggregated</span><span class="op">$</span><span class="va">to</span><span class="op">)</span><span class="op">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+<h2 id="network-data-in-working-daysweekends">3.4 Network Data in
+Working-days/weekends</h2>
+<p><strong>- The Edges Data</strong></p>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">edges_byWork</span> <span class="op">&lt;-</span> <span class="va">edges</span> <span class="op">%&gt;%</span> 
+  <span class="fu">group_by</span><span class="op">(</span><span class="va">from</span>,<span class="va">to</span>,<span class="va">when</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">summarise</span><span class="op">(</span>Weight <span class="op">=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">from</span><span class="op">!=</span><span class="va">to</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Weight</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">ungroup</span><span class="op">(</span><span class="op">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">edges_byWork</span><span class="op">$</span><span class="va">Weight</span><span class="op">)</span>
+</code></pre>
+</div>
+</details>
+<p><img src="data:image/png;base64,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" width="624" /></p>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">edges_byWork</span> <span class="op">&lt;-</span> <span class="va">edges_byWork</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">Weight</span> <span class="op">&gt;</span><span class="fl">100</span><span class="op">)</span>
+</code></pre>
+</div>
+</details>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="fu">glimpse</span><span class="op">(</span><span class="va">edges_byWork</span><span class="op">)</span>
+</code></pre>
+</div>
+</details>
+<pre><code>Rows: 9,986
+Columns: 4
+$ from   &lt;dbl&gt; 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4, 4,~
+$ to     &lt;dbl&gt; 555, 675, 731, 69, 136, 149, 176, 202, 218, 412, 660,~
+$ when   &lt;chr&gt; &quot;Working-day&quot;, &quot;Working-day&quot;, &quot;Working-day&quot;, &quot;Working~
+$ Weight &lt;int&gt; 127, 113, 101, 176, 106, 102, 198, 125, 125, 103, 105~</code></pre>
+</div>
+<p><strong>- The Nodes Data</strong></p>
+<div class="layout-chunk" data-layout="l-body">
+<details>
+<summary>
+hide
+</summary>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="va">nodes_work</span> <span class="op">&lt;-</span> <span class="va">nodes</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span> <span class="op">(</span><span class="va">ID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">edges_byWork</span><span class="op">$</span><span class="va">from</span>,
+                    <span class="va">edges_byWork</span><span class="op">$</span><span class="va">to</span><span class="op">)</span><span class="op">)</span>
+</code></pre>
+</div>
+</details>
+</div>
 <h1 id="visulisations-and-insights">3. Visulisations and Insights</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
