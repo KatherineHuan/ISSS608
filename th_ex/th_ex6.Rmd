@@ -80,6 +80,8 @@ glimpse(nodes)
 
 ## 3.1 Preprocess the Edges Data
 
+We will aggregate the participants by from, to, date, weekday, week and the working-day/weekends.
+
 ```{r,echo=TRUE, eval=FALSE}
 workdays <- c('Monday','Tuesday','Wednesday','Thursday','Friday')
 
@@ -152,7 +154,14 @@ nodes <- read_rds('data/rds/nodes.rds')
 
 ## 3.3 Network Data During Whole Period
 
+Firstly, let's have a look of the general social network situation during the whole investigated period.
+
 **- The Edges Data**
+
+Four functions from dplyr package are used here. They are: filter(), group(), summarise(), and ungroup().
+
+The output data.frame is called edges_aggregated.
+A new field called Weight has been added in edges_aggregated.
 
 ```{r}
 edges_aggregated <- edges %>% 
@@ -161,24 +170,33 @@ edges_aggregated <- edges %>%
   filter(from!=to) %>% 
   filter(Weight > 1) %>% 
   ungroup()
+edges_aggregated
 ```
+
+How is the distribution of the social network? 
 
 ```{r}
 hist(edges_aggregated$Weight)
 ```
 
-Select edges with weight higher than 200.
+We can observe that during this period the highest frequency one socialize with others is higher than 400 and as the count of edges increases, the frequency decreases, which means most people does not like to socialize with others.
+
+So, let's select edges with weight higher than 200 - those participants is more actively socialized during this period.
 
 ```{r}
 edges_aggregated <- edges_aggregated %>% 
   filter(Weight >200)
 ```
 
+Now, we have 3 columns and 4210 records of socialization.
+
 ```{r}
 glimpse(edges_aggregated)
 ```
 
 **- The Nodes Data**
+
+For the edges data, we need to find those participants who have been in the 4210 records we selected.
 
 ```{r}
 nodes_aggregated <- nodes %>%
@@ -187,6 +205,8 @@ nodes_aggregated <- nodes %>%
 ```
 
 ## 3.4 Network Data in Working-days/weekends
+
+Same functions are used here to get the network fro both working days and weekends.
 
 **- The Edges Data**
 
@@ -197,11 +217,16 @@ edges_byWork <- edges %>%
   filter(from!=to) %>% 
   filter(Weight > 1) %>% 
   ungroup()
+edges_byWork
 ```
+
+Code chunk below gives the distribution of participants' socialize situation in working-days and weekends.
 
 ```{r}
 hist(edges_byWork$Weight)
 ```
+
+We can observe that the frequency of socialization of majority participants is less than 100. We then have a look at those with weights more than 100.
 
 ```{r}
 edges_byWork <- edges_byWork %>% 
@@ -214,6 +239,8 @@ glimpse(edges_byWork)
 
 **- The Nodes Data**
 
+For the edges data, we need to find those participants who have been in the 9986 records we selected.
+
 ```{r}
 nodes_work <- nodes %>%
   filter (ID %in% c(edges_byWork$from,
@@ -221,12 +248,16 @@ nodes_work <- nodes %>%
 ```
 
 
-
-
-
 # 4. Visulisation and Insights
 
 ## 4.1 High-weightage Network During Whole Period
+
+We will create a graph data model by using tidygraph package. It provides a tidy API for graph/network manipulation. While network data itself is not tidy, it can be envisioned as two tidy tables, one for node data and one for edge data. tidygraph provides a way to switch between the two tables and provides dplyr verbs for manipulating them. Furthermore it provides access to a lot of graph algorithms with return values that facilitate their use in a tidy workflow.
+
+Two functions of tidygraph package can be used to create network objects, they are:
+
+- tbl_graph() creates a tbl_graph network object from nodes and edges data.
+- as_tbl_graph() converts network data and objects to a tbl_graph network
 
 ```{r}
 graph_aggregated <- graph_from_data_frame (edges_aggregated,
@@ -238,6 +269,11 @@ graph_aggregated
 
 ### 4.1.1 Social Network between Different Education Level
 
+We will plot Network Data with ggraph package - an extension of ggplot2, making it easier to carry over basic ggplot skills to the design of network graphs.
+
+As in all network graph, there are three main aspects to a ggraph's network graph, they are:nodes,edges and
+layouts.
+
 ```{r}
 set_graph_style()
 g <- ggraph(graph_aggregated, 
@@ -246,7 +282,7 @@ g <- ggraph(graph_aggregated,
                  alpha=0.2) +
   scale_edge_width(range = c(0.01, .5)) +
   geom_node_point(aes(colour = EducationLevel), 
-                  size = 0.2) +
+                  size = 0.4) +
   theme(legend.position = 'bottom')
 
 g
@@ -256,6 +292,10 @@ g + facet_nodes(~EducationLevel) +
                 border = TRUE) +
   theme(legend.position = 'bottom')
 ```
+
+We can detect that there're mainly 3 most significant network clusters.
+
+It seems that participants with High School or College education level are more active in social activities.
 
 ### 4.1.2 Social Network between Different Interest Group
 
@@ -267,7 +307,7 @@ g <- ggraph(graph_aggregated,
                  alpha=0.2) +
   scale_edge_width(range = c(0.01, .5)) +
   geom_node_point(aes(colour = InterestGroup), 
-                  size = 0.2) +
+                  size = 0.4) +
   theme(legend.position = 'bottom')
 g
 
@@ -276,6 +316,10 @@ g + facet_nodes(~InterestGroup) +
                 border = TRUE) +
   theme(legend.position = 'bottom')
 ```
+
+We can detect that there are also mainly 3 most significant network clusters.
+
+Participants in different interest group perform differently in different clusters in terms their activeness in joining social activities.
 
 ### 4.1.3 Social Network between Different Age Group
 
@@ -287,7 +331,7 @@ g <- ggraph(graph_aggregated,
                  alpha=0.2) +
   scale_edge_width(range = c(0.01, .5)) +
   geom_node_point(aes(colour = AgeGroup), 
-                  size = 0.2) +
+                  size = 0.4) +
   theme(legend.position = 'bottom')
 g
 
@@ -296,6 +340,10 @@ g + facet_nodes(~AgeGroup) +
                 border = TRUE) +
   theme(legend.position = 'bottom')
 ```
+
+We can detect that there are also mainly 3 most significant network clusters.
+
+Participants in different age groups perform differently in 3 clusters in terms their activeness in joining social activities.
 
 
 ## 4.2 Network during Working-days and Weekends
@@ -330,15 +378,22 @@ g + facet_edges(~when) +
 
 ```
 
+```{r}
+g + facet_nodes(~EducationLevel) +
+  th_foreground(foreground = "grey80",  
+                border = TRUE) +
+  theme(legend.position = 'bottom')
+
+```
 
 
-There are more connections,more social activities in working days.
+There are more connections - more social activities in working days.
 
 ### 4.2.2 Social Network - Working/Weekends & AgeGroup
 
 ```{r}
 set_graph_style()
-g <- ggraph(graph_aggregated, 
+g1 <- ggraph(graph_work, 
             layout = "nicely") + 
   geom_edge_link(aes(width=Weight), 
                  alpha=0.2) +
@@ -346,10 +401,32 @@ g <- ggraph(graph_aggregated,
   geom_node_point(aes(colour = AgeGroup), 
                   size = 0.4) +
   theme(legend.position = 'bottom')
-g
+g1
 
-g + facet_nodes(~AgeGroup) +
+g1 + facet_edges(~when) +
   th_foreground(foreground = "grey80",  
                 border = TRUE) +
   theme(legend.position = 'bottom')
 ```
+
+```{r}
+g1 + facet_nodes(~AgeGroup) +
+  th_foreground(foreground = "grey80",  
+                border = TRUE) +
+  theme(legend.position = 'bottom')
+```
+
+
+# 5. Conclusion
+
+What i learned:
+
+- create graph object data frames, manipulate them using appropriate functions of dplyr, lubridate, and tidygraph,
+
+- build network graph visualisation using appropriate functions of ggraph,
+
+- compute network geometrics using tidygraph,
+
+- build advanced graph visualisation by incorporating the network geometrics, and
+
+- build interactive network visualisation using visNetwork package.
