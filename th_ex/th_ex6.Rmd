@@ -22,10 +22,14 @@ knitr::opts_chunk$set(echo = FALSE)
 
 # 1. Overview
 
-Reveal the patterns of community interactions of the city of Engagement, Ohio USA by using social network analysis approach.
+In this project, we need to reveal the patterns of community interactions of the city of Engagement, Ohio USA by using social network analysis approach.
 
-
-
+Processes include:
+  - create graph object data frames, manipulate them using appropriate functions of dplyr, lubridate, and tidygraph,
+  - build network graph visualisation using appropriate functions of ggraph,
+  - compute network geometrics using tidygraph,
+  - build advanced graph visualisation by incorporating the network geometrics, and
+  - build interactive network visualisation using visNetwork package.
 
 # 2. Data Preparation
 
@@ -33,17 +37,30 @@ Reveal the patterns of community interactions of the city of Engagement, Ohio US
 
 Before we get started, it is important for us to ensure that the required R packages have been installed. If yes, we will load the R packages. If they have yet to be installed, we will install the R packages and load them onto R environment.
 
+Here four network data modelling and visualisation packages will be installed and launched. They are igraph, tidygraph, ggraph and visNetwork. Beside these four packages, tidyverse and lubridate, an R package specially designed to handle and wrangling time data will be installed and launched too.
+
 The chunk code on the right will do the trick.
 
 ```{r}
-
+packages = c('igraph', 'tidygraph', 
+             'ggraph', 'visNetwork', 
+             'lubridate', 'clock',
+             'tidyverse', 'graphlayouts')
+for(p in packages){
+  if(!require(p, character.only = T)){
+    install.packages(p)
+  }
+  library(p, character.only = T)
+}
 ```
 
 
 
 ## 2.2 Importing the dataset
 
-The code chunk below imports *participants.csv* and *FinancialJournal.csv* into R environment using [**read_csv()**](https://readr.tidyverse.org/reference/read_delim.html) function of [**readr**](https://readr.tidyverse.org/) package.
+There are two data sets needed. One contains the nodes data and the other contains the edges (also know as link) data.
+
+The edges data
 
 ```{r}
 
